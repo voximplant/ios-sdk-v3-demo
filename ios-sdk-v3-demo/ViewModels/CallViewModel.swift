@@ -8,6 +8,7 @@ import VoximplantCalls
 final class CallViewModel: ObservableObject {
     @AppStorage("destination") var destination = ""
     @Published var isInCall = false
+    @Published var isReconnecting = false
     @Published private(set) var callState: CallState = .noCall
     @Published private(set) var isMuted = false
     @Published private(set) var callDuration: TimeInterval = 0
@@ -92,34 +93,47 @@ extension CallViewModel: VICallManagerDelegate {
 }
 
 extension CallViewModel: VICallDelegate {
-    func call(_ call: VICall, didStartRingingWithHeaders headers: [String: String]?) {}
     func call(_ call: VICall, didConnectWithHeaders headers: [String: String]?) {
         DispatchQueue.main.async {
             self.callState = .callConnected(call.userDisplayName ?? "Unknown user")
             self.startDurationTimer()
         }
     }
-    func callDidStopRinging(_ call: VICall) {}
+
     func call(_ call: VICall, didDisconnectWithReason reason: VICallDisconnectReason, headers: [String: String]?) {
         DispatchQueue.main.async {
             self.stopDurationTimer()
             self.currentCall = nil
             self.callState = .noCall
             self.isMuted = false
+            self.isReconnecting = false
         }
     }
+
     func call(_ call: VICall, didFailWithError error: VICallConnectionError, headers: [String: String]?) {
         DispatchQueue.main.async {
             self.stopDurationTimer()
             self.currentCall = nil
             self.callState = .noCall
             self.isMuted = false
+            self.isReconnecting = false
         }
     }
-    func call(_ call: VICall, didReceiveMessage message: String, headers: [String: String]?) {}
-    func call(_ call: VICall, didReceiveInfo body: String, type: String, headers: [String: String]?) {}
-    func call(_ call: VICall, didAddRemoteVideoStream videoStream: VIRemoteVideoStream) {}
-    func call(_ call: VICall, didRemoveRemoteVideoStream videoStream: VIRemoteVideoStream) {}
-    func callDidStartReconnecting(_ call: VICall) {}
-    func callDidReconnect(_ call: VICall) {}
+
+    func callDidStartReconnecting(_ call: VICall) {
+        DispatchQueue.main.async {
+            guard self.currentCall == call else { return }
+            self.isReconnecting = true
+        }
+    }
+
+    func callDidReconnect(_ call: VICall) {
+        DispatchQueue.main.async {
+            guard self.currentCall == call else { return }
+            self.isReconnecting = false
+        }
+    }
+
+    func call(_ call: VICall, didStartRingingWithHeaders headers: [String: String]?) {}
+    func callDidStopRinging(_ call: VICall) {}
 }

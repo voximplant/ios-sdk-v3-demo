@@ -7,14 +7,18 @@ import SwiftUI
 struct ErrorToastView: View {
     let message: String
 
+    private enum Constants {
+        static let cornerRadius: CGFloat = 16
+    }
+
     var body: some View {
         Text(message)
-            .font(.body)
+            .font(FontSet.bodyBold)
             .padding()
             .frame(maxWidth: .infinity)
-            .background(.red)
-            .foregroundStyle(.white)
-            .clipShape(Capsule())
+            .background(.red50)
+            .foregroundStyle(.gray100)
+            .clipShape(RoundedRectangle(cornerRadius: Constants.cornerRadius))
             .shadow(radius: 8)
     }
 }

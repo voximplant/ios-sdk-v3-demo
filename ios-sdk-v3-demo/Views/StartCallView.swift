@@ -10,18 +10,37 @@ struct StartCallView: View {
     @FocusState private var destinationFieldIsFocused: Bool
 
     private enum Constants {
-        static let trailingPadding: CGFloat = 8
         static let spacing: CGFloat = 20
+        static let exitButtonSize: CGFloat = 30
+        static let avatarSize: CGFloat = 40
     }
 
     var body: some View {
-        ZStack {
-            VStack(spacing: Constants.spacing) {
+        VStack {
+            HStack {
+                AvatarPlaceholder(size: Constants.avatarSize)
+
+                Text(loginViewModel.displayName)
+                    .font(FontSet.subTitle)
+                    .foregroundStyle(.gray10)
+
                 Spacer()
 
-                Text("Logged in as \(loginViewModel.displayName)")
-                    .font(.largeTitle)
-                    .foregroundStyle(Color.black)
+                Button {
+                    loginViewModel.logout()
+                } label: {
+                    Image(systemName: "rectangle.portrait.and.arrow.right")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: Constants.exitButtonSize, height: Constants.exitButtonSize)
+                        .foregroundStyle(.gray10)
+                        .padding()
+                }
+            }
+            .padding()
+
+            VStack(spacing: Constants.spacing) {
+                Spacer()
 
                 RoundedTextField(text: $callViewModel.destination, placeholder: "Call to")
                     .focused($destinationFieldIsFocused)
@@ -40,16 +59,6 @@ struct StartCallView: View {
                 BackgroundClearView()
                 ActiveCallView()
             }
-        }
-        .safeAreaInset(edge: .top, alignment: .trailing) {
-            Button {
-                loginViewModel.logout()
-            } label: {
-                Image(systemName: "rectangle.portrait.and.arrow.right")
-                    .foregroundStyle(Color.black)
-                    .padding()
-            }
-            .padding(.trailing, Constants.trailingPadding)
         }
     }
 }

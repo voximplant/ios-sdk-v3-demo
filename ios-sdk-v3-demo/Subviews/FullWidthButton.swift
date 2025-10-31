@@ -6,18 +6,27 @@ import SwiftUI
 
 struct FullWidthButton: View {
     var title: String
-    var backgroundColor: Color = .brand
+    var backgroundColor: Color = .purple40
     var action: () -> Void
+
+    private enum Constants {
+        static let minHeight: CGFloat = 44
+        static let cornerRadius: CGFloat = 16
+    }
 
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.headline)
-                .foregroundStyle(.white)
+                .font(FontSet.bodyLargeBold)
+                .frame(minHeight: Constants.minHeight)
+                .foregroundStyle(.gray100)
                 .frame(maxWidth: .infinity)
-                .padding()
                 .background(backgroundColor)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .clipShape(RoundedRectangle(cornerRadius: Constants.cornerRadius))
         }
     }
+}
+
+#Preview {
+    FullWidthButton(title: "Login") {}
 }

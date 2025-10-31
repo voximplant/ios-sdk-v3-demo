@@ -8,7 +8,7 @@ import VoximplantCore
 struct LoginView: View {
     @State private var showToast = false
     @State private var toastMessage = ""
-    @State private var isPresentedNodePicker = false
+    @State private var isNodePickerPresented = false
     @State private var sheetHeight: CGFloat = .zero
     @State private var selectedNode: VINode = .node4
 
@@ -29,7 +29,7 @@ struct LoginView: View {
                     .foregroundStyle(Color.black)
                 RoundedTextField(text: $loginViewModel.username, placeholder: "user@app.account", suffix: loginViewModel.usernameSuffix)
                 RoundedTextField(text: $loginViewModel.password, placeholder: "Password", isSecured: true)
-                SelectedNodeView(isPresentedNodePicker: $isPresentedNodePicker, selectedNode: $loginViewModel.selectedNode)
+                SelectedNodeView(isPresentedNodePicker: $isNodePickerPresented, selectedNode: $loginViewModel.selectedNode)
                 FullWidthButton(title: "Login") {
                     loginViewModel.login()
                 }
@@ -71,11 +71,11 @@ struct LoginView: View {
                 }
             }
         }
-        .sheet(isPresented: $isPresentedNodePicker) {
+        .sheet(isPresented: $isNodePickerPresented) {
             VStack {
                 HStack(alignment: .bottom) {
                     Button {
-                        isPresentedNodePicker = false
+                        isNodePickerPresented = false
                     } label: {
                         Text("Cancel")
                             .font(FontSet.bodyLarge)
@@ -88,7 +88,7 @@ struct LoginView: View {
 
                     Button {
                         loginViewModel.selectedNode = selectedNode
-                        isPresentedNodePicker = false
+                        isNodePickerPresented = false
                     } label: {
                         Text("Select")
                             .font(FontSet.bodyLargeBold)

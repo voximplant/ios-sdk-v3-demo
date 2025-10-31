@@ -11,7 +11,7 @@ struct StartCallView: View {
 
     private enum Constants {
         static let spacing: CGFloat = 20
-        static let exitButtonSize: CGFloat = 30
+        static let logoutButtonSize: CGFloat = 30
         static let avatarSize: CGFloat = 40
     }
 
@@ -32,7 +32,7 @@ struct StartCallView: View {
                     Image(systemName: "rectangle.portrait.and.arrow.right")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: Constants.exitButtonSize, height: Constants.exitButtonSize)
+                        .frame(width: Constants.logoutButtonSize, height: Constants.logoutButtonSize)
                         .foregroundStyle(.gray10)
                         .padding()
                 }

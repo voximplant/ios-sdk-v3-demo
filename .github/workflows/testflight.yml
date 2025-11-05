@@ -2,6 +2,8 @@ name: Deploy to TestFlight
 
 on:
   push:
+    branches: [ main, testflight-ci ]
+  pull_request:
     branches: [ main ]
   workflow_dispatch:
 

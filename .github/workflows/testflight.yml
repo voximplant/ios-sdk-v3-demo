@@ -37,10 +37,19 @@ jobs:
           CODE_SIGNING_REQUIRED=NO \
           archive
     
+    - name: Export IPA
+      run: |
+        sed -i '' 's/TEAM_ID_PLACEHOLDER/${{ secrets.TEAM_ID }}/g' ExportOptions.plist
+        xcodebuild -exportArchive \
+          -archivePath $PWD/build/ios-sdk-v3-demo.xcarchive \
+          -exportOptionsPlist ExportOptions.plist \
+          -exportPath $PWD/build \
+          -allowProvisioningUpdates
+    
     - name: Upload to TestFlight
       uses: apple-actions/upload-testflight-build@v1
       with:
-        app-path: build/ios-sdk-v3-demo.xcarchive
+        app-path: build/ios-sdk-v3-demo.ipa
         issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
         api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
         api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}

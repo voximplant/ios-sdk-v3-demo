@@ -25,11 +25,6 @@ jobs:
         p12-file-base64: ${{ secrets.CERTIFICATES_P12 }}
         p12-password: ${{ secrets.CERTIFICATES_PASSWORD }}
     
-    - name: Setup App Store Connect API Key
-      run: |
-        mkdir -p ~/private_keys
-        echo '${{ secrets.APPSTORE_PRIVATE_KEY }}' > ~/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8
-    
     - name: Build Archive
       run: |
         xcodebuild -project ios-sdk-v3-demo.xcodeproj \
@@ -38,24 +33,14 @@ jobs:
           -destination generic/platform=iOS \
           -archivePath $PWD/build/ios-sdk-v3-demo.xcarchive \
           -skipPackagePluginValidation \
-          -allowProvisioningUpdates \
-          -authenticationKeyPath ~/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8 \
-          -authenticationKeyID ${{ secrets.APPSTORE_KEY_ID }} \
-          -authenticationKeyIssuerID ${{ secrets.APPSTORE_ISSUER_ID }} \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
           archive
-    
-    - name: Export IPA
-      run: |
-        sed -i '' 's/TEAM_ID_PLACEHOLDER/${{ secrets.TEAM_ID }}/g' ExportOptions.plist
-        xcodebuild -exportArchive \
-          -archivePath $PWD/build/ios-sdk-v3-demo.xcarchive \
-          -exportOptionsPlist ExportOptions.plist \
-          -exportPath $PWD/build
     
     - name: Upload to TestFlight
       uses: apple-actions/upload-testflight-build@v1
       with:
-        app-path: build/ios-sdk-v3-demo.ipa
+        app-path: build/ios-sdk-v3-demo.xcarchive
         issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
         api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
         api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}

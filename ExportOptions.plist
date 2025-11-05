@@ -6,11 +6,15 @@
     <string>app-store-connect</string>
     <key>teamID</key>
     <string>TEAM_ID_PLACEHOLDER</string>
+    <key>signingStyle</key>
+    <string>automatic</string>
     <key>uploadBitcode</key>
     <false/>
     <key>uploadSymbols</key>
     <true/>
     <key>compileBitcode</key>
     <false/>
+    <key>manageAppVersionAndBuildNumber</key>
+    <true/>
 </dict>
 </plist>

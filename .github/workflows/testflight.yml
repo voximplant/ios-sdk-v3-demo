@@ -39,6 +39,7 @@ jobs:
     
     - name: Export IPA
       run: |
+        sed -i '' 's/TEAM_ID_PLACEHOLDER/${{ secrets.TEAM_ID }}/g' ExportOptions.plist
         xcodebuild -exportArchive \
           -archivePath $PWD/build/ios-sdk-v3-demo.xcarchive \
           -exportOptionsPlist ExportOptions.plist \

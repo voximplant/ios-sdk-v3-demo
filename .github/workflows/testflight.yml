@@ -25,6 +25,11 @@ jobs:
         p12-file-base64: ${{ secrets.CERTIFICATES_P12 }}
         p12-password: ${{ secrets.CERTIFICATES_PASSWORD }}
     
+    - name: Setup App Store Connect API
+      run: |
+        mkdir -p ~/private_keys
+        echo '${{ secrets.APPSTORE_PRIVATE_KEY }}' > ~/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8
+        
     - name: Build Archive
       run: |
         xcodebuild -project ios-sdk-v3-demo.xcodeproj \
@@ -34,6 +39,9 @@ jobs:
           -archivePath $PWD/build/ios-sdk-v3-demo.xcarchive \
           -allowProvisioningUpdates \
           -skipPackagePluginValidation \
+          -authenticationKeyPath ~/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8 \
+          -authenticationKeyID ${{ secrets.APPSTORE_KEY_ID }} \
+          -authenticationKeyIssuerID ${{ secrets.APPSTORE_ISSUER_ID }} \
           archive
     
     - name: Export IPA

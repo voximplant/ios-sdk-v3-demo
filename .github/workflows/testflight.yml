@@ -33,6 +33,7 @@ jobs:
           -destination generic/platform=iOS \
           -archivePath $PWD/build/ios-sdk-v3-demo.xcarchive \
           -allowProvisioningUpdates \
+          -skipPackagePluginValidation \
           archive
     
     - name: Export IPA

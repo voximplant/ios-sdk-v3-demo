@@ -25,6 +25,14 @@ jobs:
         p12-file-base64: ${{ secrets.CERTIFICATES_P12 }}
         p12-password: ${{ secrets.CERTIFICATES_PASSWORD }}
     
+    - name: Install Provisioning Profile
+      uses: apple-actions/download-provisioning-profiles@v1
+      with:
+        bundle-id: ${{ secrets.BUNDLE_ID }}
+        issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+        api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
+        api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
+    
     - name: Build Archive
       run: |
         xcodebuild -project ios-sdk-v3-demo.xcodeproj \
@@ -33,8 +41,6 @@ jobs:
           -destination generic/platform=iOS \
           -archivePath $PWD/build/ios-sdk-v3-demo.xcarchive \
           -skipPackagePluginValidation \
-          CODE_SIGN_IDENTITY="" \
-          CODE_SIGNING_REQUIRED=NO \
           archive
     
     - name: Export IPA

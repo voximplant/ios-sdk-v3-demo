@@ -28,7 +28,7 @@ jobs:
     - name: Setup App Store Connect API
       run: |
         mkdir -p ~/private_keys
-        echo '${{ secrets.APPSTORE_PRIVATE_KEY }}' > ~/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8
+        printf '%s\n' '${{ secrets.APPSTORE_PRIVATE_KEY }}' > ~/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8
         
     - name: Build Archive
       run: |

@@ -31,8 +31,9 @@ jobs:
         ruby-version: 3.0
         bundler-cache: true
     
-    - name: Create API Key file
+    - name: Create API Key files
       run: |
+        # Create JSON file for fastlane upload
         cat > app_store_connect_api_key.json << 'EOF'
         {
           "key_id": "${{ secrets.APPSTORE_KEY_ID }}",
@@ -40,9 +41,15 @@ jobs:
           "key": "${{ secrets.APPSTORE_PRIVATE_KEY }}"
         }
         EOF
+        
+        # Create .p8 file for xcodebuild authentication
+        echo '${{ secrets.APPSTORE_PRIVATE_KEY }}' | sed 's/\\n/\n/g' > AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8
     
     - name: Install fastlane
       run: gem install fastlane
     
     - name: Deploy to TestFlight
+      env:
+        APPSTORE_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
+        APPSTORE_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
       run: fastlane testflight

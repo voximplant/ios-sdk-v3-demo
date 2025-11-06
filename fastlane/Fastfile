@@ -10,7 +10,7 @@ platform :ios do
     build_app(
       project: "ios-sdk-v3-demo.xcodeproj",
       scheme: "ios-sdk-v3-demo",
-      xcargs: "-allowProvisioningUpdates -skipPackagePluginValidation"
+      xcargs: "-allowProvisioningUpdates -skipPackagePluginValidation -authenticationKeyPath AuthKey_#{ENV['APPSTORE_KEY_ID']}.p8 -authenticationKeyID #{ENV['APPSTORE_KEY_ID']} -authenticationKeyIssuerID #{ENV['APPSTORE_ISSUER_ID']}"
     )
     
     upload_to_testflight(

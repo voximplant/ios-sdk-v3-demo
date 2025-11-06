@@ -2,7 +2,7 @@ default_platform(:ios)
 
 platform :ios do
   desc "Push a new beta build to TestFlight"
-  lane :testflight do
+  lane :deploy do
     increment_build_number(
       xcodeproj: "ios-sdk-v3-demo.xcodeproj"
     )
@@ -10,7 +10,7 @@ platform :ios do
     build_app(
       project: "ios-sdk-v3-demo.xcodeproj",
       scheme: "ios-sdk-v3-demo",
-      xcargs: "-allowProvisioningUpdates -skipPackagePluginValidation -authenticationKeyPath AuthKey_#{ENV['APPSTORE_KEY_ID']}.p8 -authenticationKeyID #{ENV['APPSTORE_KEY_ID']} -authenticationKeyIssuerID #{ENV['APPSTORE_ISSUER_ID']}"
+      xcargs: "-allowProvisioningUpdates -skipPackagePluginValidation -authenticationKeyPath #{Dir.pwd}/AuthKey_#{ENV['APPSTORE_KEY_ID']}.p8 -authenticationKeyID #{ENV['APPSTORE_KEY_ID']} -authenticationKeyIssuerID #{ENV['APPSTORE_ISSUER_ID']}"
     )
     
     upload_to_testflight(

@@ -25,39 +25,24 @@ jobs:
         p12-file-base64: ${{ secrets.CERTIFICATES_P12 }}
         p12-password: ${{ secrets.CERTIFICATES_PASSWORD }}
     
-    - name: Build Archive
-      run: |
-        xcodebuild -project ios-sdk-v3-demo.xcodeproj \
-          -scheme ios-sdk-v3-demo \
-          -configuration Release \
-          -destination generic/platform=iOS \
-          -archivePath $PWD/build/ios-sdk-v3-demo.xcarchive \
-          -skipPackagePluginValidation \
-          CODE_SIGN_IDENTITY="" \
-          CODE_SIGNING_REQUIRED=NO \
-          archive
-    
-    - name: Setup App Store Connect API Key
-      run: |
-        mkdir -p ~/private_keys
-        echo '${{ secrets.APPSTORE_PRIVATE_KEY }}' > ~/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8
-    
-    - name: Export IPA
-      run: |
-        sed -i '' 's/TEAM_ID_PLACEHOLDER/${{ secrets.TEAM_ID }}/g' ExportOptions.plist
-        xcodebuild -exportArchive \
-          -archivePath $PWD/build/ios-sdk-v3-demo.xcarchive \
-          -exportOptionsPlist ExportOptions.plist \
-          -exportPath $PWD/build \
-          -allowProvisioningUpdates \
-          -authenticationKeyPath ~/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8 \
-          -authenticationKeyID ${{ secrets.APPSTORE_KEY_ID }} \
-          -authenticationKeyIssuerID ${{ secrets.APPSTORE_ISSUER_ID }}
-    
-    - name: Upload to TestFlight
-      uses: apple-actions/upload-testflight-build@v1
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
       with:
-        app-path: build/ios-sdk-v3-demo.ipa
-        issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
-        api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
-        api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
+        ruby-version: 3.0
+        bundler-cache: true
+    
+    - name: Create API Key file
+      run: |
+        cat > app_store_connect_api_key.json << 'EOF'
+        {
+          "key_id": "${{ secrets.APPSTORE_KEY_ID }}",
+          "issuer_id": "${{ secrets.APPSTORE_ISSUER_ID }}",
+          "key": "${{ secrets.APPSTORE_PRIVATE_KEY }}"
+        }
+        EOF
+    
+    - name: Install fastlane
+      run: gem install fastlane
+    
+    - name: Deploy to TestFlight
+      run: fastlane testflight

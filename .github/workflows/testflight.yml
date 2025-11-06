@@ -45,11 +45,8 @@ jobs:
         # Create .p8 file for xcodebuild authentication
         echo '${{ secrets.APPSTORE_PRIVATE_KEY }}' | sed 's/\\n/\n/g' > AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8
     
-    - name: Install fastlane
-      run: gem install fastlane
-    
     - name: Deploy to TestFlight
       env:
         APPSTORE_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
         APPSTORE_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
-      run: fastlane deploy
+      run: bundle exec fastlane deploy

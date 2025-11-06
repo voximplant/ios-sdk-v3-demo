@@ -10,11 +10,11 @@ platform :ios do
     build_app(
       project: "ios-sdk-v3-demo.xcodeproj",
       scheme: "ios-sdk-v3-demo",
-      xcargs: "-allowProvisioningUpdates -skipPackagePluginValidation -authenticationKeyPath #{Dir.pwd}/AuthKey_#{ENV['APPSTORE_KEY_ID']}.p8 -authenticationKeyID #{ENV['APPSTORE_KEY_ID']} -authenticationKeyIssuerID #{ENV['APPSTORE_ISSUER_ID']}"
+      xcargs: "-allowProvisioningUpdates -skipPackagePluginValidation -authenticationKeyPath #{File.expand_path('../AuthKey_' + ENV['APPSTORE_KEY_ID'] + '.p8')} -authenticationKeyID #{ENV['APPSTORE_KEY_ID']} -authenticationKeyIssuerID #{ENV['APPSTORE_ISSUER_ID']}"
     )
     
     upload_to_testflight(
-      api_key_path: "app_store_connect_api_key.json"
+      api_key_path: "../app_store_connect_api_key.json"
     )
   end
 end

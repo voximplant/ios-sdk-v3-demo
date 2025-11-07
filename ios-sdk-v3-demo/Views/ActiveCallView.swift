@@ -12,8 +12,8 @@ struct ActiveCallView: View {
         static let padding: CGFloat = 32
         static let topPadding: CGFloat = 64
         static let spacing: CGFloat = 40
-        static let primaryTextColor: Color = .white
-        static let secondaryTextColor: Color = .white.opacity(0.6)
+        static let secondaryTextColor: Color = .gray100.opacity(0.6)
+        static let avatarSize: CGFloat = 100
     }
 
     var body: some View {
@@ -22,33 +22,36 @@ struct ActiveCallView: View {
 
             VStack(spacing: Constants.spacing) {
                 VStack {
-                    AvatarPlaceholder()
+                    AvatarPlaceholder(size: Constants.avatarSize)
 
                     switch callViewModel.callState {
                     case .incomingCall(let displayName):
                         VStack {
                             Text(displayName)
-                                .font(.title)
-                                .foregroundStyle(Constants.primaryTextColor)
+                                .font(FontSet.largeTitle)
+                                .foregroundStyle(.gray100)
                             Text("is calling")
+                                .font(FontSet.bodyLarge)
                                 .foregroundStyle(Constants.secondaryTextColor)
                         }
                     case .callConnected(let displayName):
                         VStack {
                             Text(displayName)
-                                .font(.title)
-                                .foregroundStyle(Constants.primaryTextColor)
+                                .font(FontSet.largeTitle)
+                                .foregroundStyle(.gray100)
                             Text(formatDuration(callViewModel.callDuration))
-                                .font(.subheadline)
+                                .font(FontSet.bodyLarge)
                                 .foregroundStyle(Constants.secondaryTextColor)
                         }
                     case .callConnecting:
                         Text("Connecting...")
-                            .font(.title)
-                            .foregroundStyle(Constants.primaryTextColor)
+                            .font(FontSet.largeTitle)
+                            .foregroundStyle(.gray100)
                     case .noCall:
                         EmptyView()
                     }
+
+                    LoadingToastView(text: "Reconnecting...", isPresented: $callViewModel.isReconnecting)
                 }
                 Spacer()
                 CallSettingsView()
@@ -93,7 +96,7 @@ struct CallAcceptView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: Constants.buttonSize, height: Constants.buttonSize)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.gray100)
                         .padding()
                         .background(Color.red)
                         .clipShape(Circle())
@@ -108,7 +111,7 @@ struct CallAcceptView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: Constants.buttonSize, height: Constants.buttonSize)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.gray100)
                         .padding()
                         .background(Color.green)
                         .clipShape(Circle())

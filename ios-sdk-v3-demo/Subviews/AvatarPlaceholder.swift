@@ -5,11 +5,14 @@
 import SwiftUI
 
 struct AvatarPlaceholder: View {
+    let size: CGFloat
+
+    private var viewSize: CGFloat { size }
+    private var avatarSize: Font { .system(size: viewSize * 0.6) }
+
     private enum Constants {
-        static let viewSize: CGFloat = 100
-        static let fontSize: Font = .system(size: Self.viewSize * 0.45)
         static let strokeColor: Color = .primary.opacity(0.06)
-        static let placeholderForegroundColor: Color = .white.opacity(0.9)
+        static let placeholderForegroundColor: Color = .gray100.opacity(0.9)
     }
 
     var body: some View {
@@ -22,21 +25,21 @@ struct AvatarPlaceholder: View {
                         endPoint: .bottomTrailing
                     )
                 )
-                .frame(width: Constants.viewSize, height: Constants.viewSize)
+                .frame(width: viewSize, height: viewSize)
             Image(systemName: "person.fill")
-                .font(Constants.fontSize)
+                .font(avatarSize)
                 .foregroundStyle(Constants.placeholderForegroundColor)
-                .frame(width: Constants.viewSize, height: Constants.viewSize)
+                .frame(width: viewSize, height: viewSize)
                 .background(Circle().fill(Color(.systemGray3)))
                 .clipShape(Circle())
             Circle()
                 .stroke(Constants.strokeColor, lineWidth: 1)
-                .frame(width: Constants.viewSize, height: Constants.viewSize)
+                .frame(width: viewSize, height: viewSize)
         }
-        .frame(width: Constants.viewSize, height: Constants.viewSize)
+        .frame(width: viewSize, height: viewSize)
     }
 }
 
 #Preview {
-    AvatarPlaceholder()
+    AvatarPlaceholder(size: 250)
 }

@@ -10,8 +10,8 @@
 		B1C1C3AE2E902FA900147E3E /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = B1C1C3AD2E902FA900147E3E /* .swiftlint.yml */; };
 		B1C1C3B02E90333000147E3E /* NOTICE in Resources */ = {isa = PBXBuildFile; fileRef = B1C1C3AF2E90333000147E3E /* NOTICE */; };
 		B1C1C3B22E90333700147E3E /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = B1C1C3B12E90333700147E3E /* LICENSE */; };
-		B268E5392E95405300C97B6E /* VoximplantCalls in Frameworks */ = {isa = PBXBuildFile; productRef = B268E5382E95405300C97B6E /* VoximplantCalls */; };
-		B268E53B2E95405300C97B6E /* VoximplantCore in Frameworks */ = {isa = PBXBuildFile; productRef = B268E53A2E95405300C97B6E /* VoximplantCore */; };
+		B2A9FB372ECCD15500318510 /* VoximplantCalls in Frameworks */ = {isa = PBXBuildFile; productRef = B268E5382E95405300C97B6E /* VoximplantCalls */; };
+		B2A9FB382ECCD15500318510 /* VoximplantCore in Frameworks */ = {isa = PBXBuildFile; productRef = B268E53A2E95405300C97B6E /* VoximplantCore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -47,8 +47,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B268E5392E95405300C97B6E /* VoximplantCalls in Frameworks */,
-				B268E53B2E95405300C97B6E /* VoximplantCore in Frameworks */,
+				B2A9FB382ECCD15500318510 /* VoximplantCore in Frameworks */,
+				B2A9FB372ECCD15500318510 /* VoximplantCalls in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,7 +88,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				B1C1C3AB2E902E8600147E3E /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				B1C1C36E2E902C7B00147E3E /* ios-sdk-v3-demo */,
@@ -127,7 +126,6 @@
 			mainGroup = B1C1C3632E902C7B00147E3E;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				B1C1C3A72E902DFB00147E3E /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
 				B268E5372E95405300C97B6E /* XCRemoteSwiftPackageReference "ios-sdk-releases" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -162,13 +160,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		B1C1C3AB2E902E8600147E3E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			productRef = B1C1C3AA2E902E8600147E3E /* SwiftLintBuildToolPlugin */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		B1C1C3752E902C8000147E3E /* Debug */ = {
@@ -392,14 +383,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		B1C1C3A72E902DFB00147E3E /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SimplyDanny/SwiftLintPlugins";
-			requirement = {
-				kind = exactVersion;
-				version = 0.58.2;
-			};
-		};
 		B268E5372E95405300C97B6E /* XCRemoteSwiftPackageReference "ios-sdk-releases" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/voximplant/ios-sdk-releases";
@@ -411,11 +394,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		B1C1C3AA2E902E8600147E3E /* SwiftLintBuildToolPlugin */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B1C1C3A72E902DFB00147E3E /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */;
-			productName = "plugin:SwiftLintBuildToolPlugin";
-		};
 		B268E5382E95405300C97B6E /* VoximplantCalls */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = B268E5372E95405300C97B6E /* XCRemoteSwiftPackageReference "ios-sdk-releases" */;

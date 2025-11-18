@@ -46,13 +46,11 @@ jobs:
         APPSTORE_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
       run: bundle exec fastlane deploy
     
-    - name: Cleanup sensitive files
+    - name: Cleanup files
       if: always()
       run: |
-        echo "Files before cleanup:"
         ls -la AuthKey_*.p8 certificate.p12 profile.mobileprovision 2>/dev/null || echo "Some files not found"
         rm -f AuthKey_*.p8
         rm -f certificate.p12
         rm -f profile.mobileprovision
-        echo "Files after cleanup:"
-        ls -la AuthKey_*.p8 certificate.p12 profile.mobileprovision 2>/dev/null || echo "All sensitive files deleted"
+        ls -la AuthKey_*.p8 certificate.p12 profile.mobileprovision 2>/dev/null || echo "All sens files deleted"

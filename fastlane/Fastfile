@@ -10,10 +10,9 @@ platform :ios do
     build_app(
       project: "ios-sdk-v3-demo.xcodeproj",
       scheme: "ios-sdk-v3-demo",
-      export_method: "app-store",
+      export_method: "app-store-connect",
       export_options: {
-        method: "app-store",
-        provisioningProfiles: {},
+        method: "app-store-connect",
         signingStyle: "automatic",
         teamID: ENV['APPSTORE_ISSUER_ID']
       },

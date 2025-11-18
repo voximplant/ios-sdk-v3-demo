@@ -25,31 +25,15 @@ jobs:
         p12-file-base64: ${{ secrets.CERTIFICATES_P12 }}
         p12-password: ${{ secrets.CERTIFICATES_PASSWORD }}
     
-    - name: Install Provisioning Profile
-      run: |
-        echo '${{ secrets.PROVISIONING_PROFILE }}' | base64 --decode > profile.mobileprovision
-        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-        cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
-    
     - name: Setup Ruby
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: 3.1
         bundler-cache: true
     
-    - name: Create API Key files
+    - name: Create API Key file
       run: |
-        # Create JSON file for fastlane upload
-        cat > app_store_connect_api_key.json << 'EOF'
-        {
-          "key_id": "${{ secrets.APPSTORE_KEY_ID }}",
-          "issuer_id": "${{ secrets.APPSTORE_ISSUER_ID }}",
-          "key": "${{ secrets.APPSTORE_PRIVATE_KEY }}"
-        }
-        EOF
-        
-        # Create .p8 file for xcodebuild authentication
-        echo '${{ secrets.APPSTORE_PRIVATE_KEY }}' | sed 's/\\n/\n/g' > AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8
+        echo '${{ secrets.APPSTORE_PRIVATE_KEY }}' > AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8
     
     - name: Deploy to TestFlight
       env:

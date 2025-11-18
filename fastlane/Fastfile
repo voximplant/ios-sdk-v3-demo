@@ -11,11 +11,15 @@ platform :ios do
       project: "ios-sdk-v3-demo.xcodeproj",
       scheme: "ios-sdk-v3-demo",
       export_method: "app-store",
-      xcargs: "-allowProvisioningUpdates -skipPackagePluginValidation -authenticationKeyPath #{File.expand_path('../AuthKey_' + ENV['APPSTORE_KEY_ID'] + '.p8')} -authenticationKeyID #{ENV['APPSTORE_KEY_ID']} -authenticationKeyIssuerID #{ENV['APPSTORE_ISSUER_ID']}"
+      xcargs: "-allowProvisioningUpdates -authenticationKeyPath #{File.expand_path('../AuthKey_' + ENV['APPSTORE_KEY_ID'] + '.p8')} -authenticationKeyID #{ENV['APPSTORE_KEY_ID']} -authenticationKeyIssuerID #{ENV['APPSTORE_ISSUER_ID']}"
     )
     
     upload_to_testflight(
-      api_key_path: "../app_store_connect_api_key.json"
+      api_key: app_store_connect_api_key(
+        key_id: ENV['APPSTORE_KEY_ID'],
+        issuer_id: ENV['APPSTORE_ISSUER_ID'],
+        key_filepath: File.expand_path('../AuthKey_' + ENV['APPSTORE_KEY_ID'] + '.p8')
+      )
     )
   end
 end

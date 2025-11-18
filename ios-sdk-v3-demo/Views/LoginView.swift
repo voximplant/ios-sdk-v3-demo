@@ -101,7 +101,7 @@ struct LoginView: View {
 
                 Picker("", selection: $selectedNode) {
                     ForEach(loginViewModel.availableNodes, id: \.self) { node in
-                        Text("Node \(node.rawValue + 1)")
+                        Text("Node \(node.rawValue)")
                     }
                 }
                 .pickerStyle(.wheel)

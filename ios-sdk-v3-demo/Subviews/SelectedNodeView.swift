@@ -19,7 +19,7 @@ struct SelectedNodeView: View {
 
     var body: some View {
         HStack {
-            Text("Node \(selectedNode.rawValue + 1)")
+            Text("Node \(selectedNode.rawValue)")
                 .font(FontSet.body)
                 .padding(.leading, Constants.horizontalPadding)
                 .foregroundStyle(.gray10)

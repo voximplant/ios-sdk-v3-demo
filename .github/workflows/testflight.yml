@@ -1,8 +1,6 @@
 name: Deploy to TestFlight
 
 on:
-  push:
-    branches: [ testflight-ci ]
   workflow_dispatch:
 
 jobs:

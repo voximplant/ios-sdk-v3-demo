@@ -13,8 +13,10 @@ platform :ios do
       export_method: "app-store",
       export_options: {
         method: "app-store",
-        signingStyle: "automatic",
-        teamID: "W9BHJBL635"
+        signingStyle: "manual",
+        provisioningProfiles: {
+          "com.voximplant.demos.v3.audiocall" => ENV['PROFILE_UUID']
+        }
       },
       xcargs: "-allowProvisioningUpdates -skipPackagePluginValidation -authenticationKeyPath #{File.expand_path('../AuthKey_' + ENV['APPSTORE_KEY_ID'] + '.p8')} -authenticationKeyID #{ENV['APPSTORE_KEY_ID']} -authenticationKeyIssuerID #{ENV['APPSTORE_ISSUER_ID']}"
     )

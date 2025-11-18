@@ -30,6 +30,9 @@ jobs:
         echo '${{ secrets.PROVISIONING_PROFILE }}' | base64 --decode > profile.mobileprovision
         mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
         cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+        # Extract UUID and set as environment variable
+        PROFILE_UUID=$(security cms -D -i profile.mobileprovision | plutil -extract UUID raw -)
+        echo "PROFILE_UUID=$PROFILE_UUID" >> $GITHUB_ENV
     
     - name: Setup Ruby
       uses: ruby/setup-ruby@v1

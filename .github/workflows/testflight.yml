@@ -19,6 +19,11 @@ jobs:
       with:
         xcode-version: '16.2'
     
+    - name: Install iOS Simulator
+      run: |
+        sudo xcodebuild -runFirstLaunch
+        xcrun simctl list runtimes
+    
     - name: Install Apple Certificate
       uses: apple-actions/import-codesign-certs@v2
       with:

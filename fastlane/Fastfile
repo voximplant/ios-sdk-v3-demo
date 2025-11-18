@@ -11,6 +11,11 @@ platform :ios do
       project: "ios-sdk-v3-demo.xcodeproj",
       scheme: "ios-sdk-v3-demo",
       export_method: "app-store",
+      export_options: {
+        method: "app-store",
+        signingStyle: "automatic",
+        teamID: "W9BHJBL635"
+      },
       xcargs: "-allowProvisioningUpdates -skipPackagePluginValidation -authenticationKeyPath #{File.expand_path('../AuthKey_' + ENV['APPSTORE_KEY_ID'] + '.p8')} -authenticationKeyID #{ENV['APPSTORE_KEY_ID']} -authenticationKeyIssuerID #{ENV['APPSTORE_ISSUER_ID']}"
     )
     

@@ -7,37 +7,96 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B1C1C3AE2E902FA900147E3E /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = B1C1C3AD2E902FA900147E3E /* .swiftlint.yml */; };
-		B1C1C3B02E90333000147E3E /* NOTICE in Resources */ = {isa = PBXBuildFile; fileRef = B1C1C3AF2E90333000147E3E /* NOTICE */; };
-		B1C1C3B22E90333700147E3E /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = B1C1C3B12E90333700147E3E /* LICENSE */; };
+		B14B94B72F76684F005722E8 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = B14B94B62F76684F005722E8 /* .swiftlint.yml */; };
 		B2A9FB372ECCD15500318510 /* VoximplantCalls in Frameworks */ = {isa = PBXBuildFile; productRef = B268E5382E95405300C97B6E /* VoximplantCalls */; };
 		B2A9FB382ECCD15500318510 /* VoximplantCore in Frameworks */ = {isa = PBXBuildFile; productRef = B268E53A2E95405300C97B6E /* VoximplantCore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B14B94B62F76684F005722E8 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = ../.swiftlint.yml; sourceTree = SOURCE_ROOT; };
 		B1C1C36C2E902C7B00147E3E /* ios-sdk-v3-demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ios-sdk-v3-demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		B1C1C3AD2E902FA900147E3E /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
-		B1C1C3AF2E90333000147E3E /* NOTICE */ = {isa = PBXFileReference; lastKnownFileType = text; path = NOTICE; sourceTree = "<group>"; };
-		B1C1C3B12E90333700147E3E /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		B1C1C3A92E902E5B00147E3E /* Exceptions for "ios-sdk-v3-demo" folder in "ios-sdk-v3-demo" target */ = {
+		B14B94E72F766867005722E8 /* Exceptions for "Models" folder in "ios-sdk-v3-demo" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Resources/Info.plist,
+				AudioDevice.swift,
+				CallState.swift,
+				LoginError.swift,
+			);
+			target = B1C1C36B2E902C7B00147E3E /* ios-sdk-v3-demo */;
+		};
+		B14B94E82F766867005722E8 /* Exceptions for "Resources" folder in "ios-sdk-v3-demo" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Assets.xcassets,
+				FontSet.swift,
+			);
+			target = B1C1C36B2E902C7B00147E3E /* ios-sdk-v3-demo */;
+		};
+		B14B94E92F766867005722E8 /* Exceptions for "ViewModels" folder in "ios-sdk-v3-demo" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				AudioDevicesViewModel.swift,
+				CallViewModel.swift,
+				LoginViewModel.swift,
+			);
+			target = B1C1C36B2E902C7B00147E3E /* ios-sdk-v3-demo */;
+		};
+		B14B94EA2F766867005722E8 /* Exceptions for "Views" folder in "ios-sdk-v3-demo" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ActiveCallView.swift,
+				AudioCallApp.swift,
+				LoginView.swift,
+				StartCallView.swift,
 			);
 			target = B1C1C36B2E902C7B00147E3E /* ios-sdk-v3-demo */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		B1C1C36E2E902C7B00147E3E /* ios-sdk-v3-demo */ = {
+		B14B94B92F76685F005722E8 /* Helpers */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+		B14B94BE2F766867005722E8 /* Models */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				B1C1C3A92E902E5B00147E3E /* Exceptions for "ios-sdk-v3-demo" folder in "ios-sdk-v3-demo" target */,
+				B14B94E72F766867005722E8 /* Exceptions for "Models" folder in "ios-sdk-v3-demo" target */,
 			);
-			path = "ios-sdk-v3-demo";
+			path = Models;
+			sourceTree = "<group>";
+		};
+		B14B94C22F766867005722E8 /* Resources */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				B14B94E82F766867005722E8 /* Exceptions for "Resources" folder in "ios-sdk-v3-demo" target */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		B14B94CA2F766867005722E8 /* Subviews */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Subviews;
+			sourceTree = "<group>";
+		};
+		B14B94CE2F766867005722E8 /* ViewModels */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				B14B94E92F766867005722E8 /* Exceptions for "ViewModels" folder in "ios-sdk-v3-demo" target */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		B14B94D32F766867005722E8 /* Views */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				B14B94EA2F766867005722E8 /* Exceptions for "Views" folder in "ios-sdk-v3-demo" target */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -58,10 +117,13 @@
 		B1C1C3632E902C7B00147E3E = {
 			isa = PBXGroup;
 			children = (
-				B1C1C3AD2E902FA900147E3E /* .swiftlint.yml */,
-				B1C1C3AF2E90333000147E3E /* NOTICE */,
-				B1C1C3B12E90333700147E3E /* LICENSE */,
-				B1C1C36E2E902C7B00147E3E /* ios-sdk-v3-demo */,
+				B14B94B62F76684F005722E8 /* .swiftlint.yml */,
+				B14B94BE2F766867005722E8 /* Models */,
+				B14B94C22F766867005722E8 /* Resources */,
+				B14B94CA2F766867005722E8 /* Subviews */,
+				B14B94CE2F766867005722E8 /* ViewModels */,
+				B14B94D32F766867005722E8 /* Views */,
+				B14B94B92F76685F005722E8 /* Helpers */,
 				B1C1C36D2E902C7B00147E3E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -90,7 +152,8 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				B1C1C36E2E902C7B00147E3E /* ios-sdk-v3-demo */,
+				B14B94B92F76685F005722E8 /* Helpers */,
+				B14B94CA2F766867005722E8 /* Subviews */,
 			);
 			name = "ios-sdk-v3-demo";
 			packageProductDependencies = (
@@ -143,9 +206,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B1C1C3B22E90333700147E3E /* LICENSE in Resources */,
-				B1C1C3B02E90333000147E3E /* NOTICE in Resources */,
-				B1C1C3AE2E902FA900147E3E /* .swiftlint.yml in Resources */,
+				B14B94B72F76684F005722E8 /* .swiftlint.yml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -293,7 +354,7 @@
 				DEVELOPMENT_TEAM = W9BHJBL635;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "ios-sdk-v3-demo/Resources/Info.plist";
+				INFOPLIST_FILE = Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Audio Call";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Access to the microphone is necessary in order to make and receive audio calls";
@@ -331,7 +392,7 @@
 				DEVELOPMENT_TEAM = W9BHJBL635;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "ios-sdk-v3-demo/Resources/Info.plist";
+				INFOPLIST_FILE = Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Audio Call";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Access to the microphone is necessary in order to make and receive audio calls";

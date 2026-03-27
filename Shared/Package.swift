@@ -13,6 +13,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/voximplant/ios-sdk-releases.git", exact: "3.1.0"),
+        .package(url: "https://github.com/SimplyDanny/SwiftLintPlugins", exact: "0.63.2"),
     ],
     targets: [
         .target(
@@ -20,7 +21,8 @@ let package = Package(
             dependencies: [
                 .product(name: "VoximplantCore", package: "ios-sdk-releases"),
             ],
-            resources: [.process("Resources/Assets.xcassets")]
+            resources: [.process("Resources/Assets.xcassets")],
+            plugins: [.plugin(name: "SwiftLintBuildToolPlugin", package: "SwiftLintPlugins")]
         ),
     ]
 )

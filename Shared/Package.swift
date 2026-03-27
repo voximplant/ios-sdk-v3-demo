@@ -1,0 +1,26 @@
+// swift-tools-version: 6.2
+
+import PackageDescription
+
+let package = Package(
+    name: "Shared",
+    platforms: [.iOS(.v16)],
+    products: [
+        .library(
+            name: "CommonUI",
+            targets: ["CommonUI"]
+        ),
+    ],
+    dependencies: [
+        .package(url: "https://github.com/voximplant/ios-sdk-releases.git", exact: "3.1.0"),
+    ],
+    targets: [
+        .target(
+            name: "CommonUI",
+            dependencies: [
+                .product(name: "VoximplantCore", package: "ios-sdk-releases"),
+            ],
+            resources: [.process("Resources/Assets.xcassets")]
+        ),
+    ]
+)

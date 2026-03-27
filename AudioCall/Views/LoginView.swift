@@ -1,7 +1,8 @@
 //
-//  Copyright (c) 2011-2025, Voximplant, Inc. All rights reserved.
+//  Copyright (c) 2011-2026, Voximplant, Inc. All rights reserved.
 //
 
+import CommonUI
 import SwiftUI
 import VoximplantCore
 
@@ -38,11 +39,11 @@ struct LoginView: View {
 
             VStack {
                 Spacer()
-                Image(.logo)
+                Image.logo
                     .renderingMode(.template)
                     .resizable()
                     .scaledToFit()
-                    .foregroundStyle(.purple40)
+                    .foregroundStyle(Color.purple40)
                     .frame(height: Constants.logoHeight)
                     .padding()
             }

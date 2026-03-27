@@ -1,7 +1,8 @@
 //
-//  Copyright (c) 2011-2025, Voximplant, Inc. All rights reserved.
+//  Copyright (c) 2011-2026, Voximplant, Inc. All rights reserved.
 //
 
+import CommonUI
 import SwiftUI
 
 struct ActiveCallView: View {
@@ -29,7 +30,7 @@ struct ActiveCallView: View {
                         VStack {
                             Text(displayName)
                                 .font(FontSet.largeTitle)
-                                .foregroundStyle(.gray100)
+                                .foregroundStyle(Color.gray100)
                             Text("is calling")
                                 .font(FontSet.bodyLarge)
                                 .foregroundStyle(Constants.secondaryTextColor)
@@ -38,7 +39,7 @@ struct ActiveCallView: View {
                         VStack {
                             Text(displayName)
                                 .font(FontSet.largeTitle)
-                                .foregroundStyle(.gray100)
+                                .foregroundStyle(Color.gray100)
                             Text(formatDuration(callViewModel.callDuration))
                                 .font(FontSet.bodyLarge)
                                 .foregroundStyle(Constants.secondaryTextColor)
@@ -46,7 +47,7 @@ struct ActiveCallView: View {
                     case .callConnecting:
                         Text("Connecting...")
                             .font(FontSet.largeTitle)
-                            .foregroundStyle(.gray100)
+                            .foregroundStyle(Color.gray100)
                     case .noCall:
                         EmptyView()
                     }
@@ -96,7 +97,7 @@ struct CallAcceptView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: Constants.buttonSize, height: Constants.buttonSize)
-                        .foregroundStyle(.gray100)
+                        .foregroundStyle(Color.gray100)
                         .padding()
                         .background(Color.red)
                         .clipShape(Circle())
@@ -111,7 +112,7 @@ struct CallAcceptView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: Constants.buttonSize, height: Constants.buttonSize)
-                        .foregroundStyle(.gray100)
+                        .foregroundStyle(Color.gray100)
                         .padding()
                         .background(Color.green)
                         .clipShape(Circle())

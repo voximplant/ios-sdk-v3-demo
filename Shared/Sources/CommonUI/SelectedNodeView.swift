@@ -1,14 +1,13 @@
 //
-//  Copyright (c) 2011-2025, Voximplant, Inc. All rights reserved.
+//  Copyright (c) 2011-2026, Voximplant, Inc. All rights reserved.
 //
 
 import SwiftUI
 import VoximplantCore
 
-struct SelectedNodeView: View {
-    @Binding var isPresentedNodePicker: Bool
-    @Binding var selectedNode: VINode
-
+public struct SelectedNodeView: View {
+    @Binding private var isPresentedNodePicker: Bool
+    @Binding private var selectedNode: VINode
     @State private var isPressed = false
 
     private enum Constants {
@@ -17,12 +16,17 @@ struct SelectedNodeView: View {
         static let cornerRadius: CGFloat = 8
     }
 
-    var body: some View {
+    public init(isPresentedNodePicker: Binding<Bool>, selectedNode: Binding<VINode>) {
+        self._isPresentedNodePicker = isPresentedNodePicker
+        self._selectedNode = selectedNode
+    }
+
+    public var body: some View {
         HStack {
             Text("Node \(selectedNode.rawValue)")
                 .font(FontSet.body)
                 .padding(.leading, Constants.horizontalPadding)
-                .foregroundStyle(.gray10)
+                .foregroundStyle(Color.gray10)
 
             Spacer()
 

@@ -1,23 +1,27 @@
 //
-//  Copyright (c) 2011-2025, Voximplant, Inc. All rights reserved.
+//  Copyright (c) 2011-2026, Voximplant, Inc. All rights reserved.
 //
 
 import SwiftUI
 
-struct ErrorToastView: View {
-    let message: String
+public struct ErrorToastView: View {
+    private let message: String
 
     private enum Constants {
         static let cornerRadius: CGFloat = 16
     }
 
-    var body: some View {
+    public init(message: String) {
+        self.message = message
+    }
+
+    public var body: some View {
         Text(message)
             .font(FontSet.bodyBold)
             .padding()
             .frame(maxWidth: .infinity)
-            .background(.red50)
-            .foregroundStyle(.gray100)
+            .background(Color.red50)
+            .foregroundStyle(Color.gray100)
             .clipShape(RoundedRectangle(cornerRadius: Constants.cornerRadius))
             .shadow(radius: 8)
     }

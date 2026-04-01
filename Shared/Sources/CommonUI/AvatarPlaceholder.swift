@@ -1,12 +1,11 @@
 //
-//  Copyright (c) 2011-2025, Voximplant, Inc. All rights reserved.
+//  Copyright (c) 2011-2026, Voximplant, Inc. All rights reserved.
 //
 
 import SwiftUI
 
-struct AvatarPlaceholder: View {
-    let size: CGFloat
-
+public struct AvatarPlaceholder: View {
+    private let size: CGFloat
     private var viewSize: CGFloat { size }
     private var avatarSize: Font { .system(size: viewSize * 0.6) }
 
@@ -15,7 +14,11 @@ struct AvatarPlaceholder: View {
         static let placeholderForegroundColor: Color = .gray100.opacity(0.9)
     }
 
-    var body: some View {
+    public init(size: CGFloat) {
+        self.size = size
+    }
+
+    public var body: some View {
         ZStack {
             Circle()
                 .fill(

@@ -1,15 +1,15 @@
 //
-//  Copyright (c) 2011-2025, Voximplant, Inc. All rights reserved.
+//  Copyright (c) 2011-2026, Voximplant, Inc. All rights reserved.
 //
 
 import SwiftUI
 
-struct RoundedTextField: View {
-    @Binding var text: String
-    var placeholder: String
-    var suffix: String?
-    var isSecured = false
-    @FocusState var isFocused: Bool
+public struct RoundedTextField: View {
+    @Binding private var text: String
+    private var placeholder: String
+    private var suffix: String?
+    private var isSecured = false
+    @FocusState private var isFocused: Bool
 
     private enum Constants {
         static let horizontalPadding: CGFloat = 12
@@ -17,7 +17,14 @@ struct RoundedTextField: View {
         static let cornerRadius: CGFloat = 8
     }
 
-    var body: some View {
+    public init(text: Binding<String>, placeholder: String, suffix: String? = nil, isSecured: Bool = false) {
+        _text = text
+        self.placeholder = placeholder
+        self.suffix = suffix
+        self.isSecured = isSecured
+    }
+
+    public var body: some View {
         HStack {
             Group {
                 if isSecured {
@@ -32,17 +39,17 @@ struct RoundedTextField: View {
             }
             .placeholder(when: text.isEmpty) {
                 Text(placeholder)
-                    .foregroundStyle(.gray50)
+                    .foregroundStyle(Color.gray50)
                     .font(FontSet.body)
             }
             .padding(.leading, Constants.horizontalPadding)
-            .foregroundStyle(.gray10)
+            .foregroundStyle(Color.gray10)
             .autocapitalization(.none)
             .disableAutocorrection(true)
             if let suffix {
                 Text(suffix)
                     .font(FontSet.body)
-                    .foregroundStyle(.gray10)
+                    .foregroundStyle(Color.gray10)
                     .padding(.trailing, Constants.horizontalPadding)
             }
         }
@@ -52,7 +59,7 @@ struct RoundedTextField: View {
     }
 }
 
-extension View {
+public extension View {
     func placeholder<Content: View>(
         when shouldShow: Bool,
         alignment: Alignment = .leading,

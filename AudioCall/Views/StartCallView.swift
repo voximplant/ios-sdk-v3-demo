@@ -1,7 +1,8 @@
 //
-//  Copyright (c) 2011-2025, Voximplant, Inc. All rights reserved.
+//  Copyright (c) 2011-2026, Voximplant, Inc. All rights reserved.
 //
 
+import CommonUI
 import SwiftUI
 
 struct StartCallView: View {
@@ -22,7 +23,7 @@ struct StartCallView: View {
 
                 Text(loginViewModel.displayName)
                     .font(FontSet.subTitle)
-                    .foregroundStyle(.gray10)
+                    .foregroundStyle(Color.gray10)
 
                 Spacer()
 
@@ -33,7 +34,7 @@ struct StartCallView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: Constants.logoutButtonSize, height: Constants.logoutButtonSize)
-                        .foregroundStyle(.gray10)
+                        .foregroundStyle(Color.gray10)
                         .padding()
                 }
             }

@@ -1,12 +1,12 @@
 //
-//  Copyright (c) 2011-2025, Voximplant, Inc. All rights reserved.
+//  Copyright (c) 2011-2026, Voximplant, Inc. All rights reserved.
 //
 
 import SwiftUI
 
-struct LoadingToastView: View {
-    let text: String
-    @Binding var isPresented: Bool
+public struct LoadingToastView: View {
+    private let text: String
+    @Binding private var isPresented: Bool
 
     private enum Constants {
         static let progressViewSize: CGFloat = 20
@@ -14,7 +14,12 @@ struct LoadingToastView: View {
         static let cornerRadius: CGFloat = 16
     }
 
-    var body: some View {
+    public init(text: String, isPresented: Binding<Bool>) {
+        self.text = text
+        self._isPresented = isPresented
+    }
+
+    public var body: some View {
         HStack {
             ProgressView()
                 .progressViewStyle(.circular)

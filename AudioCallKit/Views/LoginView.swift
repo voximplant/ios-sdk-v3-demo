@@ -11,8 +11,9 @@ struct LoginView: View {
     @State private var toastMessage = ""
     @State private var isNodePickerPresented = false
     @State private var sheetHeight: CGFloat = .zero
-    @State private var selectedNode: VINode = .node4
-
+    @AppStorage("username") private var username = ""
+    @AppStorage("password") private var password = ""
+    @AppStorage("selectedNode") private var selectedNode: VINode = .node4
     @EnvironmentObject private var loginViewModel: LoginViewModel
 
     private enum Constants {
@@ -28,9 +29,9 @@ struct LoginView: View {
                 Text("Audio call demo")
                     .font(FontSet.largeTitle)
                     .foregroundStyle(Color.black)
-                RoundedTextField(text: $loginViewModel.username, placeholder: "user@app.account", suffix: loginViewModel.usernameSuffix)
-                RoundedTextField(text: $loginViewModel.password, placeholder: "Password", isSecured: true)
-                SelectedNodeView(isPresentedNodePicker: $isNodePickerPresented, selectedNode: $loginViewModel.selectedNode)
+                RoundedTextField(text: $username, placeholder: "user@app.account", suffix: loginViewModel.usernameSuffix)
+                RoundedTextField(text: $password, placeholder: "Password", isSecured: true)
+                SelectedNodeView(isPresentedNodePicker: $isNodePickerPresented, selectedNode: $selectedNode)
                 FullWidthButton(title: "Login") {
                     loginViewModel.login()
                 }
@@ -88,7 +89,6 @@ struct LoginView: View {
                     Spacer()
 
                     Button {
-                        loginViewModel.selectedNode = selectedNode
                         isNodePickerPresented = false
                     } label: {
                         Text("Select")
@@ -96,9 +96,6 @@ struct LoginView: View {
                     }
                 }
                 .padding(Constants.nodePickerPadding)
-                .onDisappear {
-                    selectedNode = loginViewModel.selectedNode
-                }
 
                 Picker("", selection: $selectedNode) {
                     ForEach(loginViewModel.availableNodes, id: \.self) { node in

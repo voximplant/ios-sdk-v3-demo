@@ -2,138 +2,360 @@
 //  Copyright (c) 2011-2026, Voximplant, Inc. All rights reserved.
 //
 
+import AVFAudio
+import CallKit
+import Combine
 import SwiftUI
 import VoximplantCalls
+import VoximplantCore
 
-final class CallViewModel: ObservableObject {
+final class CallViewModel: NSObject, ObservableObject {
     @AppStorage("destination") var destination = ""
     @Published var isInCall = false
     @Published var isReconnecting = false
-    @Published private(set) var callState: CallState = .noCall
-    @Published private(set) var isMuted = false
-    @Published private(set) var callDuration: TimeInterval = 0
+    @Published private(set) var details = CallDetails()
 
-    private var currentCall: VICall? {
+    private var currentCall: CallWrapper? {
+        willSet {
+            currentCall?.delegate = nil
+        }
         didSet {
-            isInCall = currentCall != nil
+            currentCall?.delegate = self
         }
     }
     private let callManager: VICallManager
-    private let callSettings = VICallSettings()
+    private let callSettings = VICallSettings(callKitSupport: true)
     private var durationTimer: Timer?
+    private let queue = DispatchQueue(label: "callkitserv")
+    private let loginService = LoginService.shared
+    private let audioManager = VIAudioManager.shared
+    private let callController = CXCallController()
+    private var provider: CXProvider
+    private var cancellables = Set<AnyCancellable>()
 
-    init() {
+    override init() {
+        let providerConfiguration = CXProviderConfiguration()
+        providerConfiguration.maximumCallsPerCallGroup = 1
+        providerConfiguration.maximumCallGroups = 1
+        providerConfiguration.supportedHandleTypes = [.generic]
+        providerConfiguration.ringtoneSound = "noisecollector-beam.aiff"
+        providerConfiguration.iconTemplateImageData = UIImage(resource: .callKitLogo).pngData()
+        self.provider = CXProvider(configuration: providerConfiguration)
         self.callManager = VICallManager.shared
+        super.init()
         callManager.delegate = self
+        provider.setDelegate(self, queue: queue)
+        VICore.delegateQueue = self.queue
     }
 
     func makeCall() {
-        guard let call = callManager.createCall(destination: destination, settings: callSettings) else { return }
-        call.delegate = self
-        self.currentCall = call
-        self.currentCall?.start()
-        callState = .callConnecting
+        guard !destination.isEmpty else { return }
+        let handle = CXHandle(type: .generic, value: destination)
+        let startCallAction = CXStartCallAction(call: UUID(), handle: handle)
+        requestTransaction(startCallAction) { _ in }
     }
 
     func answerCall() {
-        currentCall?.answer(with: callSettings)
+        guard let uuid = currentCall?.uuid else { return }
+        let anwerCallAction = CXAnswerCallAction(call: uuid)
+        requestTransaction(anwerCallAction) { [weak self] error in
+            guard error != nil else { return }
+            self?.callClear()
+        }
     }
 
-    func rejectCall() {
-        currentCall?.reject(with: .decline)
-        currentCall = nil
-        callState = .noCall
-        isMuted = false
-    }
-
-    func hangup() {
-        currentCall?.hangup()
-        stopDurationTimer()
-        currentCall = nil
-        callState = .noCall
-        isMuted = false
+    func endCall() {
+        guard let uuid = currentCall?.uuid else { return }
+        let action = CXEndCallAction(call: uuid)
+        requestTransaction(action) { [weak self] error in
+            guard error != nil else { return }
+            self?.callClear()
+        }
     }
 
     func toggleMute() {
-        if let currentCall {
-            currentCall.muteAudio(!isMuted)
-            isMuted.toggle()
-        }
-    }
-
-    private func startDurationTimer() {
-        durationTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            self?.updateCallDuration()
-        }
-    }
-
-    private func stopDurationTimer() {
-        durationTimer?.invalidate()
-        durationTimer = nil
-        callDuration = 0
-    }
-
-    private func updateCallDuration() {
-        callDuration = currentCall?.duration ?? 0
+        guard let uuid = currentCall?.uuid else { return }
+        let newMuteValue = !details.isMuted
+        let muteAction = CXSetMutedCallAction(call: uuid, muted: newMuteValue)
+        requestTransaction(muteAction) { _ in }
     }
 }
 
+// MARK: - VICallManagerDelegate
 extension CallViewModel: VICallManagerDelegate {
-    func callManager(_ callManager: VICallManager, didReceiveIncomingCall call: VICall, withVideo video: Bool, headers: [String: String]?) {
-        guard self.currentCall == nil else {
+    func callManager(
+        _ callManager: VICallManager,
+        didReceiveIncomingCall call: VICall,
+        withVideo video: Bool,
+        headers: [String: String]?
+    ) {
+        guard currentCall?.call == nil else {
             call.reject(with: .decline)
             return
         }
-        DispatchQueue.main.async {
-            self.callState = .incomingCall(call.userDisplayName ?? "Unknown user")
-            self.currentCall = call
-            call.delegate = self
+        guard let incomingCallUuid = call.callKitUUID, let user = call.user, let displayName = call.userDisplayName else {
+            call.reject(with: .decline)
+            return
+        }
+
+        if let currentCall {
+            if currentCall.uuid == incomingCallUuid {
+                print("call from recent push")
+                currentCall.call = call
+                DispatchQueue.main.async {
+                    self.details.state = .incomingCall(displayName)
+                    self.isInCall = true
+                }
+            } else {
+                print("another call has been reported, reject a new one")
+                call.reject(with: .decline)
+            }
+        } else {
+            print("no current call, created new one")
+            currentCall = CallWrapper(
+                uuid: incomingCallUuid,
+                call: call,
+                withPushCompletion: nil
+            )
+            provider.reportIncomingCall(with: incomingCallUuid, from: user, displayName: displayName) { [weak self] result in
+                switch result {
+                case .success:
+                    DispatchQueue.main.async {
+                        self?.details.state = .incomingCall(displayName)
+                        self?.isInCall = true
+                    }
+                case .failure:
+                    call.reject(with: .decline)
+                    self?.callClear()
+                }
+            }
         }
     }
 }
 
+// MARK: - VICallDelegate
 extension CallViewModel: VICallDelegate {
     func call(_ call: VICall, didConnectWithHeaders headers: [String: String]?) {
+        guard let currentCall else {
+            call.delegate = nil
+            call.hangup()
+            callClear()
+            return
+        }
+
+        switch call.direction {
+        case .incoming:
+            currentCall.completePushProcessing()
+        case .outgoing:
+            provider.reportOutgoingCall(with: currentCall.uuid, connectedAt: Date())
+            let callinfo = CXCallUpdate()
+            callinfo.localizedCallerName = call.userDisplayName
+            callinfo.applyVoximplantConfiguration()
+            provider.reportCall(with: currentCall.uuid, updated: callinfo)
+        default:
+            break
+        }
         DispatchQueue.main.async {
-            self.callState = .callConnected(call.userDisplayName ?? "Unknown user")
+            self.details.state = .callConnected(call.userDisplayName ?? "Unknown user")
             self.startDurationTimer()
         }
     }
 
     func call(_ call: VICall, didDisconnectWithReason reason: VICallDisconnectReason, headers: [String: String]?) {
-        DispatchQueue.main.async {
-            self.stopDurationTimer()
-            self.currentCall = nil
-            self.callState = .noCall
-            self.isMuted = false
-            self.isReconnecting = false
-        }
+        guard let currentCall else { return }
+        let endReason: CXCallEndedReason = reason == .answeredElsewhere ? .answeredElsewhere : .remoteEnded
+        reportCallEnded(currentCall.uuid, endReason)
     }
 
     func call(_ call: VICall, didFailWithError error: VICallConnectionError, headers: [String: String]?) {
-        DispatchQueue.main.async {
-            self.stopDurationTimer()
-            self.currentCall = nil
-            self.callState = .noCall
-            self.isMuted = false
-            self.isReconnecting = false
-        }
+        guard let currentCall else { return }
+        reportCallEnded(currentCall.uuid, .failed)
     }
 
     func callDidStartReconnecting(_ call: VICall) {
         DispatchQueue.main.async {
-            guard self.currentCall == call else { return }
+            guard self.currentCall?.call == call else { return }
             self.isReconnecting = true
         }
     }
 
     func callDidReconnect(_ call: VICall) {
         DispatchQueue.main.async {
-            guard self.currentCall == call else { return }
+            guard self.currentCall?.call == call else { return }
             self.isReconnecting = false
         }
     }
 
     func call(_ call: VICall, didStartRingingWithHeaders headers: [String: String]?) {}
     func callDidStopRinging(_ call: VICall) {}
+}
+
+// MARK: - PushCallNotifierDelegate
+extension CallViewModel: PushCallNotifierDelegate {
+    func pushCallNotifier(
+        _ notifier: PushCallNotifier,
+        didReceiveIncomingPush push: VoximplantPush,
+        with completion: @escaping () -> Void
+    ) {
+        guard currentCall == nil else {
+            if currentCall?.uuid == push.callUuid {
+                print("already managing call \(push.callUuid)")
+            } else {
+                print("skipped new call \(push.callUuid)")
+            }
+            return
+        }
+
+        currentCall = CallWrapper(uuid: push.callUuid, call: nil, withPushCompletion: completion)
+
+        let update = CXCallUpdate()
+        update.remoteHandle = CXHandle(type: .generic, value: push.remoteNumber)
+        update.localizedCallerName = push.remoteDisplayName
+        provider.reportNewIncomingCall(with: push.callUuid, update: update) { [weak self] error in
+            guard error != nil else { return }
+            self?.currentCall?.completePushProcessing()
+            self?.callClear()
+        }
+
+        loginService.login { [weak self] result in
+            guard let self, case .failure = result else { return }
+            reportCallEnded(push.callUuid, .failed)
+        }
+    }
+}
+
+// MARK: - Private helpers
+extension CallViewModel {
+    private func reportCallEnded(_ uuid: UUID, _ endReason: CXCallEndedReason) {
+        guard currentCall?.uuid == uuid else { return }
+        provider.reportCall(with: uuid, endedAt: Date(), reason: endReason)
+        currentCall?.completePushProcessing()
+        callClear()
+    }
+
+    private func requestTransaction(_ action: CXAction, completion: @escaping (Error?) -> Void) {
+        callController.requestTransaction(with: [action]) { error in
+            completion(error)
+        }
+    }
+
+    private func resetCallDetails() {
+        DispatchQueue.main.async {
+            self.stopDurationTimer()
+            self.details.state = .noCall
+            self.details.isMuted = false
+        }
+    }
+
+    private func startDurationTimer() {
+        durationTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            self?.details.duration = self?.currentCall?.call?.duration ?? 0
+        }
+    }
+
+    private func stopDurationTimer() {
+        durationTimer?.invalidate()
+        durationTimer = nil
+        details.duration = 0
+    }
+
+    private func callClear() {
+        currentCall = nil
+        DispatchQueue.main.async {
+            self.isInCall = false
+            self.isReconnecting = false
+            self.resetCallDetails()
+        }
+    }
+}
+
+// MARK: - CXProviderDelegate
+extension CallViewModel: CXProviderDelegate {
+    func providerDidReset(_ provider: CXProvider) {
+        currentCall?.call?.reject(with: .decline, headers: nil)
+    }
+
+    func provider(_ provider: CXProvider, perform action: CXStartCallAction) {
+        guard currentCall == nil else {
+            action.fail()
+            return
+        }
+
+        guard let call = callManager.createCall(destination: destination, settings: callSettings) else {
+            action.fail()
+            return
+        }
+
+        currentCall = CallWrapper(uuid: action.callUUID, call: call)
+        call.start()
+        DispatchQueue.main.async {
+            self.isInCall = true
+            self.details.state = .callConnecting
+        }
+        action.fulfill()
+    }
+
+    func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
+        guard let currentCall, let call = currentCall.call else {
+            action.fail()
+            return
+        }
+
+        guard !currentCall.hasStarted else {
+            action.fail()
+            return
+        }
+
+        call.answer(with: callSettings)
+        action.fulfill()
+    }
+
+    func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
+        guard let currentCall, let call = currentCall.call else {
+            action.fail()
+            return
+        }
+
+        let decline = call.direction == .incoming && call.state == .created
+        if decline {
+            call.reject(with: .decline, headers: nil)
+        } else {
+            call.hangup(withHeaders: nil)
+        }
+        action.fulfill(withDateEnded: Date())
+    }
+
+    func provider(_ provider: CXProvider, perform action: CXSetMutedCallAction) {
+        guard let call = currentCall?.call else {
+            action.fail()
+            return
+        }
+        call.muteAudio(action.isMuted)
+        DispatchQueue.main.async {
+            self.details.isMuted = action.isMuted
+        }
+        action.fulfill()
+    }
+
+    func provider(_ provider: CXProvider, perform action: CXPlayDTMFCallAction) {
+        guard let call = currentCall?.call else {
+            action.fail()
+            return
+        }
+        call.sendDTMF(action.digits) { error in
+            if error == nil {
+                action.fulfill()
+            } else {
+                action.fail()
+            }
+        }
+    }
+
+    func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
+        audioManager.callKitProviderDidActivateAudioSession()
+    }
+
+    func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {
+        audioManager.callKitProviderDidDeactivateAudioSession()
+    }
 }

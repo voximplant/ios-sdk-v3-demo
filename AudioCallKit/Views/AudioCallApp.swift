@@ -11,7 +11,9 @@ struct AudioCallApp: App {
     @StateObject private var audioDevicesViewModel: AudioDevicesViewModel
 
     init() {
-        _callViewModel = StateObject(wrappedValue: CallViewModel())
+        let callViewModel = CallViewModel()
+        PushCallNotifier.shared.delegate = callViewModel
+        _callViewModel = StateObject(wrappedValue: callViewModel)
         _loginViewModel = StateObject(wrappedValue: LoginViewModel())
         _audioDevicesViewModel = StateObject(wrappedValue: AudioDevicesViewModel())
     }

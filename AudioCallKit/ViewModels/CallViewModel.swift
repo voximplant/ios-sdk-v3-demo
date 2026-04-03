@@ -30,7 +30,8 @@ final class CallViewModel: NSObject, ObservableObject {
     private let loginService = LoginService.shared
     private let audioManager = VIAudioManager.shared
     private let callController = CXCallController()
-    private var provider: CXProvider = {
+    private var pendingEndCallActions: [UUID] = []
+    private let provider: CXProvider = {
         let providerConfiguration = CXProviderConfiguration()
         providerConfiguration.maximumCallsPerCallGroup = 1
         providerConfiguration.maximumCallGroups = 1
@@ -39,6 +40,7 @@ final class CallViewModel: NSObject, ObservableObject {
         providerConfiguration.iconTemplateImageData = UIImage(resource: .callKitLogo).pngData()
         return CXProvider(configuration: providerConfiguration)
     }()
+    private var clientIsLoggedIn = false
     private var cancellables = Set<AnyCancellable>()
 
     override init() {
@@ -46,6 +48,7 @@ final class CallViewModel: NSObject, ObservableObject {
         callManager.delegate = self
         provider.setDelegate(self, queue: queue)
         VICore.delegateQueue = self.queue
+        self.observeLoginState()
     }
 
     func makeCall() {
@@ -97,11 +100,16 @@ extension CallViewModel: VICallManagerDelegate {
             call.reject(with: .decline)
             return
         }
+        guard pendingEndCallActions.removeFirst(where: { $0 == incomingCallUuid }) == nil else {
+            call.reject(with: .decline)
+            return
+        }
 
         if let currentCall {
             if currentCall.uuid == incomingCallUuid {
                 print("call from recent push")
                 currentCall.call = call
+                commitPendingTransactions()
                 DispatchQueue.main.async {
                     self.data.state = .incomingCall(displayName)
                     self.isInCall = true
@@ -120,6 +128,7 @@ extension CallViewModel: VICallManagerDelegate {
             provider.reportIncomingCall(with: incomingCallUuid, from: user, displayName: displayName) { [weak self] result in
                 switch result {
                 case .success:
+                    self?.commitPendingTransactions()
                     DispatchQueue.main.async {
                         self?.data.state = .incomingCall(displayName)
                         self?.isInCall = true
@@ -224,51 +233,6 @@ extension CallViewModel: PushCallNotifierDelegate {
     }
 }
 
-// MARK: - Private helpers
-extension CallViewModel {
-    private func reportCallEnded(_ uuid: UUID, _ endReason: CXCallEndedReason) {
-        guard currentCall?.uuid == uuid else { return }
-        provider.reportCall(with: uuid, endedAt: Date(), reason: endReason)
-        currentCall?.completePushProcessing()
-        callClear()
-    }
-
-    private func requestTransaction(_ action: CXAction, completion: @escaping (Error?) -> Void) {
-        callController.requestTransaction(with: [action]) { error in
-            completion(error)
-        }
-    }
-
-    private func resetCallData() {
-        DispatchQueue.main.async {
-            self.stopDurationTimer()
-            self.data.state = .noCall
-            self.data.isMuted = false
-        }
-    }
-
-    private func startDurationTimer() {
-        durationTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            self?.data.duration = self?.currentCall?.call?.duration ?? 0
-        }
-    }
-
-    private func stopDurationTimer() {
-        durationTimer?.invalidate()
-        durationTimer = nil
-        data.duration = 0
-    }
-
-    private func callClear() {
-        currentCall = nil
-        DispatchQueue.main.async {
-            self.isInCall = false
-            self.isReconnecting = false
-            self.resetCallData()
-        }
-    }
-}
-
 // MARK: - CXProviderDelegate
 extension CallViewModel: CXProviderDelegate {
     func providerDidReset(_ provider: CXProvider) {
@@ -351,11 +315,120 @@ extension CallViewModel: CXProviderDelegate {
         }
     }
 
+    func provider(_ provider: CXProvider, execute transaction: CXTransaction) -> Bool {
+        let isPendingTransaction: Bool
+        if clientIsLoggedIn, currentCall?.call != nil {
+            isPendingTransaction = false
+            print("execute transaction immediately")
+        } else {
+            isPendingTransaction = true
+
+            // We take the first action cause transaction does not contain more than one in current implementation
+            guard let endCallAction = transaction.actions.first as? CXEndCallAction else {
+                return isPendingTransaction
+            }
+            let callUUID = endCallAction.callUUID
+            print("should reject VICall with callUUID: \(callUUID) after receiving")
+            pendingEndCallActions.append(callUUID)
+            endCallAction.fulfill(withDateEnded: Date())
+            callClear()
+        }
+        return isPendingTransaction
+    }
+
     func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
         audioManager.callKitProviderDidActivateAudioSession()
     }
 
     func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {
         audioManager.callKitProviderDidDeactivateAudioSession()
+    }
+}
+
+// MARK: - Private helpers
+extension CallViewModel {
+    private func reportCallEnded(_ uuid: UUID, _ endReason: CXCallEndedReason) {
+        guard currentCall?.uuid == uuid else { return }
+        provider.pendingCallActions(of: CXAction.self, withCall: uuid).forEach { $0.fail() }
+        provider.reportCall(with: uuid, endedAt: Date(), reason: endReason)
+        currentCall?.completePushProcessing()
+        callClear()
+    }
+
+    private func requestTransaction(_ action: CXAction, completion: @escaping (Error?) -> Void) {
+        callController.requestTransaction(with: [action]) { error in
+            completion(error)
+        }
+    }
+
+    private func commitPendingTransactions() {
+        for transaction in provider.pendingTransactions {
+            for action in transaction.actions {
+                switch action {
+                case let startAction as CXStartCallAction:
+                    provider(provider, perform: startAction)
+                case let answerAction as CXAnswerCallAction:
+                    provider(provider, perform: answerAction)
+                case let endAction as CXEndCallAction:
+                    provider(provider, perform: endAction)
+                case let muteAction as CXSetMutedCallAction:
+                    provider(provider, perform: muteAction)
+                case let dtmfAction as CXPlayDTMFCallAction:
+                    provider(provider, perform: dtmfAction)
+                default:
+                    break
+                }
+            }
+        }
+    }
+
+    private func failPendingTransactions() {
+        for transaction in provider.pendingTransactions {
+            for action in transaction.actions {
+                action.fail()
+            }
+        }
+    }
+
+    private func observeLoginState() {
+        loginService.$isLoggedIn
+            .receive(on: self.queue)
+            .sink { [weak self] isLoggedIn in
+                guard let self else { return }
+                self.clientIsLoggedIn = isLoggedIn
+                guard !isLoggedIn, currentCall != nil else { return }
+                failPendingTransactions()
+                callClear()
+            }
+            .store(in: &cancellables)
+    }
+
+    private func resetCallData() {
+        DispatchQueue.main.async {
+            self.stopDurationTimer()
+            self.data.state = .noCall
+            self.data.isMuted = false
+        }
+    }
+
+    private func startDurationTimer() {
+        durationTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            self?.data.duration = self?.currentCall?.call?.duration ?? 0
+        }
+    }
+
+    private func stopDurationTimer() {
+        durationTimer?.invalidate()
+        durationTimer = nil
+        data.duration = 0
+    }
+
+    private func callClear() {
+        currentCall = nil
+        DispatchQueue.main.async {
+            self.isInCall = false
+            self.isReconnecting = false
+            self.resetCallData()
+        }
     }
 }

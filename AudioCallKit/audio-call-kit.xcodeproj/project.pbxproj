@@ -74,6 +74,7 @@
 				"CXCallUpdate+Extension.swift",
 				"CXProvider+Extension.swift",
 				"Equatable+Extension.swift",
+				"RangeReplaceableCollection+Extension.swift",
 			);
 			target = B1C1C36B2E902C7B00147E3E /* audio-call-kit */;
 		};

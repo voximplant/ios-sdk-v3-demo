@@ -4,7 +4,7 @@
 
 import Foundation
 
-struct CallDetails {
+struct CallData {
     var state: CallState = .noCall
     var isMuted = false
     var duration: TimeInterval = 0

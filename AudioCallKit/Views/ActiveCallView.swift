@@ -25,7 +25,7 @@ struct ActiveCallView: View {
                 VStack {
                     AvatarPlaceholder(size: Constants.avatarSize)
 
-                    switch callViewModel.details.state {
+                    switch callViewModel.data.state {
                     case .incomingCall(let displayName):
                         VStack {
                             Text(displayName)
@@ -40,7 +40,7 @@ struct ActiveCallView: View {
                             Text(displayName)
                                 .font(FontSet.largeTitle)
                                 .foregroundStyle(Color.gray100)
-                            Text(formatDuration(callViewModel.details.duration))
+                            Text(formatDuration(callViewModel.data.duration))
                                 .font(FontSet.bodyLarge)
                                 .foregroundStyle(Constants.secondaryTextColor)
                         }
@@ -88,7 +88,7 @@ struct CallAcceptView: View {
 
     var body: some View {
         HStack(spacing: .zero) {
-            switch callViewModel.details.state {
+            switch callViewModel.data.state {
             case .incomingCall:
                 Button {
                     callViewModel.endCall()
@@ -146,7 +146,7 @@ struct CallSettingsView: View {
     }
 
     var body: some View {
-        switch callViewModel.details.state {
+        switch callViewModel.data.state {
         case .incomingCall, .noCall:
             EmptyView()
         case .callConnected, .callConnecting:
@@ -154,15 +154,15 @@ struct CallSettingsView: View {
                 Button {
                     callViewModel.toggleMute()
                 } label: {
-                    Image(systemName: callViewModel.details.isMuted ? "mic.slash.fill" : "mic.fill")
+                    Image(systemName: callViewModel.data.isMuted ? "mic.slash.fill" : "mic.fill")
                         .resizable()
                         .transaction { $0.animation = nil }
                         .scaledToFit()
                         .frame(width: Constants.buttonSize, height: Constants.buttonSize)
-                        .foregroundStyle(callViewModel.details.isMuted ? .black : .white)
+                        .foregroundStyle(callViewModel.data.isMuted ? .black : .white)
                         .padding()
-                        .background(callViewModel.details.isMuted ? .clear : Constants.buttonBackroundColor)
-                        .background(callViewModel.details.isMuted ? AnyShapeStyle(Color.white) : AnyShapeStyle(.ultraThinMaterial))
+                        .background(callViewModel.data.isMuted ? .clear : Constants.buttonBackroundColor)
+                        .background(callViewModel.data.isMuted ? AnyShapeStyle(Color.white) : AnyShapeStyle(.ultraThinMaterial))
                         .clipShape(Circle())
                 }
 

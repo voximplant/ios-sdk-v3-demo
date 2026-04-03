@@ -13,7 +13,7 @@ final class CallViewModel: NSObject, ObservableObject {
     @AppStorage("destination") var destination = ""
     @Published var isInCall = false
     @Published var isReconnecting = false
-    @Published private(set) var details = CallDetails()
+    @Published private(set) var data = CallData()
 
     private var currentCall: CallWrapper? {
         willSet {
@@ -23,25 +23,25 @@ final class CallViewModel: NSObject, ObservableObject {
             currentCall?.delegate = self
         }
     }
-    private let callManager: VICallManager
+    private let callManager = VICallManager.shared
     private let callSettings = VICallSettings(callKitSupport: true)
     private var durationTimer: Timer?
     private let queue = DispatchQueue(label: "callkitserv")
     private let loginService = LoginService.shared
     private let audioManager = VIAudioManager.shared
     private let callController = CXCallController()
-    private var provider: CXProvider
-    private var cancellables = Set<AnyCancellable>()
-
-    override init() {
+    private var provider: CXProvider = {
         let providerConfiguration = CXProviderConfiguration()
         providerConfiguration.maximumCallsPerCallGroup = 1
         providerConfiguration.maximumCallGroups = 1
         providerConfiguration.supportedHandleTypes = [.generic]
         providerConfiguration.ringtoneSound = "noisecollector-beam.aiff"
         providerConfiguration.iconTemplateImageData = UIImage(resource: .callKitLogo).pngData()
-        self.provider = CXProvider(configuration: providerConfiguration)
-        self.callManager = VICallManager.shared
+        return CXProvider(configuration: providerConfiguration)
+    }()
+    private var cancellables = Set<AnyCancellable>()
+
+    override init() {
         super.init()
         callManager.delegate = self
         provider.setDelegate(self, queue: queue)
@@ -75,7 +75,7 @@ final class CallViewModel: NSObject, ObservableObject {
 
     func toggleMute() {
         guard let uuid = currentCall?.uuid else { return }
-        let newMuteValue = !details.isMuted
+        let newMuteValue = !data.isMuted
         let muteAction = CXSetMutedCallAction(call: uuid, muted: newMuteValue)
         requestTransaction(muteAction) { _ in }
     }
@@ -103,7 +103,7 @@ extension CallViewModel: VICallManagerDelegate {
                 print("call from recent push")
                 currentCall.call = call
                 DispatchQueue.main.async {
-                    self.details.state = .incomingCall(displayName)
+                    self.data.state = .incomingCall(displayName)
                     self.isInCall = true
                 }
             } else {
@@ -121,7 +121,7 @@ extension CallViewModel: VICallManagerDelegate {
                 switch result {
                 case .success:
                     DispatchQueue.main.async {
-                        self?.details.state = .incomingCall(displayName)
+                        self?.data.state = .incomingCall(displayName)
                         self?.isInCall = true
                     }
                 case .failure:
@@ -156,7 +156,7 @@ extension CallViewModel: VICallDelegate {
             break
         }
         DispatchQueue.main.async {
-            self.details.state = .callConnected(call.userDisplayName ?? "Unknown user")
+            self.data.state = .callConnected(call.userDisplayName ?? "Unknown user")
             self.startDurationTimer()
         }
     }
@@ -239,24 +239,24 @@ extension CallViewModel {
         }
     }
 
-    private func resetCallDetails() {
+    private func resetCallData() {
         DispatchQueue.main.async {
             self.stopDurationTimer()
-            self.details.state = .noCall
-            self.details.isMuted = false
+            self.data.state = .noCall
+            self.data.isMuted = false
         }
     }
 
     private func startDurationTimer() {
         durationTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            self?.details.duration = self?.currentCall?.call?.duration ?? 0
+            self?.data.duration = self?.currentCall?.call?.duration ?? 0
         }
     }
 
     private func stopDurationTimer() {
         durationTimer?.invalidate()
         durationTimer = nil
-        details.duration = 0
+        data.duration = 0
     }
 
     private func callClear() {
@@ -264,7 +264,7 @@ extension CallViewModel {
         DispatchQueue.main.async {
             self.isInCall = false
             self.isReconnecting = false
-            self.resetCallDetails()
+            self.resetCallData()
         }
     }
 }
@@ -290,7 +290,7 @@ extension CallViewModel: CXProviderDelegate {
         call.start()
         DispatchQueue.main.async {
             self.isInCall = true
-            self.details.state = .callConnecting
+            self.data.state = .callConnecting
         }
         action.fulfill()
     }
@@ -332,7 +332,7 @@ extension CallViewModel: CXProviderDelegate {
         }
         call.muteAudio(action.isMuted)
         DispatchQueue.main.async {
-            self.details.isMuted = action.isMuted
+            self.data.isMuted = action.isMuted
         }
         action.fulfill()
     }

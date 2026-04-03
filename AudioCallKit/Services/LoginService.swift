@@ -64,11 +64,11 @@ final class LoginService {
                 if error == nil {
                     self.isLoggedIn = true
                     self.displayName = loginResult?.displayName ?? self.defaultDisplayName
-                    self.onLoginStateChanged?(true)
+                    self.onLoginStateChanged?(self.isLoggedIn)
                     completion(.success(self.displayName))
                 } else {
                     self.isLoggedIn = false
-                    self.onLoginStateChanged?(false)
+                    self.onLoginStateChanged?(self.isLoggedIn)
                     completion(.failure(.loginFailed))
                 }
             }
@@ -80,7 +80,7 @@ extension LoginService: VIClientSessionDelegate {
     func client(_ client: VIClient, didDisconnectWithReason reason: VIDisconnectReason) {
         DispatchQueue.main.async {
             self.isLoggedIn = false
-            self.onLoginStateChanged?(false)
+            self.onLoginStateChanged?(self.isLoggedIn)
         }
     }
 }

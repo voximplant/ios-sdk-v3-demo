@@ -24,7 +24,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				AudioDevice.swift,
-				CallDetails.swift,
+				CallData.swift,
 				CallState.swift,
 				CallWrapper.swift,
 				LoginError.swift,

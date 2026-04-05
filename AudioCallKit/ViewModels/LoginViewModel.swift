@@ -2,6 +2,7 @@
 //  Copyright (c) 2011-2026, Voximplant, Inc. All rights reserved.
 //
 
+import Combine
 import SwiftUI
 import VoximplantCore
 
@@ -16,17 +17,14 @@ final class LoginViewModel: ObservableObject {
     let availableNodes: [VINode]
 
     private let loginService: LoginService
+    private var cancellables = Set<AnyCancellable>()
 
     init() {
         self.availableNodes = VINode.allCases
         self.isLoggedIn = false
         self.displayName = ""
         self.loginService = LoginService.shared
-        self.loginService.onLoginStateChanged = { [weak self] loggedIn in
-            guard let self else { return }
-            self.isLoggedIn = loggedIn
-            self.displayName = self.loginService.displayName
-        }
+        self.observeLoginState()
     }
 
     func login() {
@@ -44,5 +42,16 @@ final class LoginViewModel: ObservableObject {
 
     func logout() {
         loginService.disconnect()
+    }
+
+    private func observeLoginState() {
+        loginService.$isLoggedIn
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isLoggedIn in
+                guard let self else { return }
+                self.isLoggedIn = isLoggedIn
+                self.displayName = self.loginService.displayName
+            }
+            .store(in: &cancellables)
     }
 }

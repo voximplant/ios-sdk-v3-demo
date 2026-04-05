@@ -2,14 +2,14 @@
 //  Copyright (c) 2011-2026, Voximplant, Inc. All rights reserved.
 //
 
+import Combine
 import SwiftUI
 import VoximplantCore
 
 final class LoginService {
     static let shared = LoginService()
 
-    var onLoginStateChanged: ((Bool) -> Void)?
-    private(set) var isLoggedIn = false
+    @Published private(set) var isLoggedIn = false
     private(set) var displayName = ""
     let usernameSuffix = ".voximplant.com"
 
@@ -64,11 +64,8 @@ final class LoginService {
                 if error == nil {
                     self.isLoggedIn = true
                     self.displayName = loginResult?.displayName ?? self.defaultDisplayName
-                    self.onLoginStateChanged?(self.isLoggedIn)
                     completion(.success(self.displayName))
                 } else {
-                    self.isLoggedIn = false
-                    self.onLoginStateChanged?(self.isLoggedIn)
                     completion(.failure(.loginFailed))
                 }
             }
@@ -80,7 +77,6 @@ extension LoginService: VIClientSessionDelegate {
     func client(_ client: VIClient, didDisconnectWithReason reason: VIDisconnectReason) {
         DispatchQueue.main.async {
             self.isLoggedIn = false
-            self.onLoginStateChanged?(self.isLoggedIn)
         }
     }
 }

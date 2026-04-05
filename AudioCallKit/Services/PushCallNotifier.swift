@@ -18,12 +18,10 @@ final class PushCallNotifier: NSObject {
 
     weak var delegate: PushCallNotifierDelegate?
     private var pushToken: Data?
-    private let voIPRegistry: PKPushRegistry
-    private let pushService: PushService
+    private let voIPRegistry = PKPushRegistry(queue: .main)
+    private let pushService = PushService.shared
 
     override private init() {
-        self.voIPRegistry = PKPushRegistry(queue: .main)
-        self.pushService = PushService.shared
         super.init()
         self.voIPRegistry.delegate = self
         if let pushToken = voIPRegistry.pushToken(for: .voIP) {

@@ -6,72 +6,43 @@ import SwiftUI
 import VoximplantCore
 
 final class LoginViewModel: ObservableObject {
-    @Published var isLoggedIn = false
+    @Published var isLoggedIn: Bool
     @Published var loginError: LoginError?
-    @Published var displayName = ""
-    @AppStorage("username") var username = ""
-    @AppStorage("password") var password = ""
-    @Published var selectedNode: VINode = .node4
+    @Published var displayName: String
 
-    let usernameSuffix = ".voximplant.com"
-    let availableNodes = VINode.allCases
+    var usernameSuffix: String {
+        loginService.usernameSuffix
+    }
+    let availableNodes: [VINode]
 
-    private let client: VIClient
-    private let defaultDisplayName = "Unknown"
+    private let loginService: LoginService
 
     init() {
-        self.client = VIClient.shared
-        client.delegate = self
+        self.availableNodes = VINode.allCases
+        self.isLoggedIn = false
+        self.displayName = ""
+        self.loginService = LoginService.shared
+        self.loginService.onLoginStateChanged = { [weak self] loggedIn in
+            guard let self else { return }
+            self.isLoggedIn = loggedIn
+            self.displayName = self.loginService.displayName
+        }
     }
 
     func login() {
-        guard !username.isEmpty, !password.isEmpty else {
-            loginError = .emptyCredentials
-            return
-        }
-        switch client.state {
-        case .disconnected:
-            client.connect(to: selectedNode) { [weak self] error in
-                guard let self else { return }
-
-                guard error == nil else {
-                    DispatchQueue.main.async {
-                        self.loginError = .connectFailed
-                    }
-                    return
-                }
-                self.loginWithPassword()
+        loginService.login { [weak self] result in
+            guard let self else { return }
+            switch result {
+            case .success(let name):
+                self.displayName = name
+                self.loginError = nil
+            case .failure(let error):
+                self.loginError = error
             }
-        case .connected:
-            loginWithPassword()
-        case .loggedIn:
-            isLoggedIn = true
-        default:
-            loginError = .wrongState
         }
     }
 
     func logout() {
-        client.disconnect()
-    }
-
-    private func loginWithPassword() {
-        let preparedUsername = username + usernameSuffix
-        self.client.login(withPassword: self.password, user: preparedUsername) { [weak self] loginResult, error in
-            guard let self else { return }
-            DispatchQueue.main.async {
-                self.isLoggedIn = error == nil
-                self.displayName = loginResult?.displayName ?? self.defaultDisplayName
-                self.loginError = error == nil ? nil : .loginFailed
-            }
-        }
-    }
-}
-
-extension LoginViewModel: VIClientSessionDelegate {
-    func client(_ client: VIClient, didDisconnectWithReason reason: VIDisconnectReason) {
-        DispatchQueue.main.async {
-            self.isLoggedIn = false
-        }
+        loginService.disconnect()
     }
 }

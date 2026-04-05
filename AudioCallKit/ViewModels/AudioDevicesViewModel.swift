@@ -21,10 +21,6 @@ final class AudioDevicesViewModel: ObservableObject {
     init() {
         audioDeviceService = VIAudioManager.shared
         audioDeviceService.delegate = self
-
-        if AVAudioSession.sharedInstance().category != .playAndRecord {
-            try? AVAudioSession.sharedInstance().setCategory(.soloAmbient, mode: .default, options: [])
-        }
         updateAudioDevices()
     }
 

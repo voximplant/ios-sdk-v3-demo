@@ -62,6 +62,7 @@ struct StartCallView: View {
                 ActiveCallView()
             }
         }
+        .toast(error: $callViewModel.callError)
         .onChange(of: callViewModel.destination) { _ in
             callViewModel.destination = callViewModel.destination.filter { !$0.isWhitespace }
         }

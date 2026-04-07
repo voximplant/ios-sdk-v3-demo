@@ -7,8 +7,6 @@ import SwiftUI
 import VoximplantCore
 
 struct LoginView: View {
-    @State private var showToast = false
-    @State private var toastMessage = ""
     @State private var isNodePickerPresented = false
     @State private var sheetHeight: CGFloat = .zero
     @AppStorage("username") private var username = ""
@@ -50,30 +48,8 @@ struct LoginView: View {
                     .padding()
             }
             .ignoresSafeArea(.keyboard, edges: .bottom)
-
-            VStack {
-                if showToast {
-                    ErrorToastView(message: toastMessage)
-                        .transition(.move(edge: .top).combined(with: .opacity))
-                        .padding()
-                }
-                Spacer()
-            }
         }
-        .animation(.spring(response: 0.5, dampingFraction: 0.7), value: showToast)
-        .onChange(of: loginViewModel.loginError) { newError in
-            guard let error = newError else { return }
-            toastMessage = String(describing: error)
-            withAnimation {
-                showToast = true
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                loginViewModel.loginError = nil
-                withAnimation {
-                    showToast = false
-                }
-            }
-        }
+        .toast(error: $loginViewModel.loginError)
         .onChange(of: username) { _ in
             username = username.filter { !$0.isWhitespace }
         }

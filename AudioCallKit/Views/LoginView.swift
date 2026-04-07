@@ -35,6 +35,7 @@ struct LoginView: View {
                 FullWidthButton(title: "Login") {
                     loginViewModel.login()
                 }
+                .disabled(username.isEmpty || password.isEmpty)
             }
             .padding()
 
@@ -72,6 +73,12 @@ struct LoginView: View {
                     showToast = false
                 }
             }
+        }
+        .onChange(of: username) { _ in
+            username = username.filter { !$0.isWhitespace }
+        }
+        .onChange(of: password) { _ in
+            password = password.filter { !$0.isWhitespace }
         }
         .sheet(isPresented: $isNodePickerPresented) {
             VStack {

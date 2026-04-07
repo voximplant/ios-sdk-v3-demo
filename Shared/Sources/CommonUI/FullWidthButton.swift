@@ -5,6 +5,8 @@
 import SwiftUI
 
 public struct FullWidthButton: View {
+    @Environment(\.isEnabled) private var isEnabled
+
     private var title: String
     private var backgroundColor: Color = .purple40
     private var action: () -> Void
@@ -27,9 +29,10 @@ public struct FullWidthButton: View {
                 .frame(minHeight: Constants.minHeight)
                 .foregroundStyle(Color.gray100)
                 .frame(maxWidth: .infinity)
-                .background(backgroundColor)
+                .background(isEnabled ? backgroundColor : backgroundColor.opacity(0.4))
                 .clipShape(RoundedRectangle(cornerRadius: Constants.cornerRadius))
         }
+        .disabled(!isEnabled)
     }
 }
 

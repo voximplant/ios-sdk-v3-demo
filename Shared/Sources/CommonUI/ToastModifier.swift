@@ -8,11 +8,21 @@ struct ToastModifier<E: CustomStringConvertible & Equatable>: ViewModifier {
     @Binding var error: E?
     @State private var toastMessage: String?
 
+    private let cornerRadius: CGFloat = 16
+    private let shadowRadius: CGFloat = 8
+
     func body(content: Content) -> some View {
         content
             .overlay(alignment: .top) {
                 if let toastMessage {
-                    ErrorToastView(message: toastMessage)
+                    Text(toastMessage)
+                        .font(FontSet.bodyBold)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.red50)
+                        .foregroundStyle(Color.gray100)
+                        .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+                        .shadow(radius: shadowRadius)
                         .transition(.move(edge: .top).combined(with: .opacity))
                         .padding()
                 }

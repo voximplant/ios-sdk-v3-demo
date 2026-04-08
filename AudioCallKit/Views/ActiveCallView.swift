@@ -7,6 +7,7 @@ import SwiftUI
 
 struct ActiveCallView: View {
     @EnvironmentObject private var callViewModel: CallViewModel
+    @StateObject private var audioDevicesViewModel = AudioDevicesViewModel()
 
     private enum Constants {
         static let padding: CGFloat = 32
@@ -55,11 +56,13 @@ struct ActiveCallView: View {
                 }
                 Spacer()
                 CallSettingsView()
+                    .environmentObject(audioDevicesViewModel)
                 CallAcceptView()
             }
             .padding(.top, Constants.topPadding)
             .padding(.bottom, Constants.padding)
             .padding(.horizontal, Constants.padding)
+            .toast(error: $audioDevicesViewModel.error)
         }
     }
 
@@ -137,7 +140,7 @@ struct CallAcceptView: View {
 
 struct CallSettingsView: View {
     @EnvironmentObject private var callViewModel: CallViewModel
-    @StateObject private var audioDevicesViewModel = AudioDevicesViewModel()
+    @EnvironmentObject private var audioDevicesViewModel: AudioDevicesViewModel
 
     private enum Constants {
         static let buttonSize: CGFloat = 40

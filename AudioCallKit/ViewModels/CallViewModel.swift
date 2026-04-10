@@ -13,6 +13,7 @@ final class CallViewModel: NSObject, ObservableObject {
     @AppStorage("destination") var destination = ""
     @Published var isInCall = false
     @Published var isReconnecting = false
+    @Published var callError: CallError?
     @Published private(set) var data = CallData()
 
     private var currentCall: CallWrapper? {
@@ -52,17 +53,20 @@ final class CallViewModel: NSObject, ObservableObject {
     }
 
     func makeCall() {
-        guard !destination.isEmpty else { return }
         let handle = CXHandle(type: .generic, value: destination)
-        let startCallAction = CXStartCallAction(call: UUID(), handle: handle)
-        requestTransaction(startCallAction) { _ in }
+        let action = CXStartCallAction(call: UUID(), handle: handle)
+        callController.requestTransaction(with: [action]) { [weak self] error in
+            guard error != nil else { return }
+            self?.showError(.startCallFailed())
+        }
     }
 
     func answerCall() {
         guard let uuid = currentCall?.uuid else { return }
-        let anwerCallAction = CXAnswerCallAction(call: uuid)
-        requestTransaction(anwerCallAction) { [weak self] error in
+        let action = CXAnswerCallAction(call: uuid)
+        callController.requestTransaction(with: [action]) { [weak self] error in
             guard error != nil else { return }
+            self?.showError(.answerFailed)
             self?.callClear()
         }
     }
@@ -70,7 +74,7 @@ final class CallViewModel: NSObject, ObservableObject {
     func endCall() {
         guard let uuid = currentCall?.uuid else { return }
         let action = CXEndCallAction(call: uuid)
-        requestTransaction(action) { [weak self] error in
+        callController.requestTransaction(with: [action]) { [weak self] error in
             guard error != nil else { return }
             self?.callClear()
         }
@@ -79,8 +83,8 @@ final class CallViewModel: NSObject, ObservableObject {
     func toggleMute() {
         guard let uuid = currentCall?.uuid else { return }
         let newMuteValue = !data.isMuted
-        let muteAction = CXSetMutedCallAction(call: uuid, muted: newMuteValue)
-        requestTransaction(muteAction) { _ in }
+        let action = CXSetMutedCallAction(call: uuid, muted: newMuteValue)
+        callController.requestTransaction(with: [action]) { _ in }
     }
 }
 
@@ -135,6 +139,7 @@ extension CallViewModel: VICallManagerDelegate {
                     }
                 case .failure:
                     call.reject(with: .decline)
+                    self?.showError(.reportIncomingCallFailed)
                     self?.callClear()
                 }
             }
@@ -173,12 +178,21 @@ extension CallViewModel: VICallDelegate {
     func call(_ call: VICall, didDisconnectWithReason reason: VICallDisconnectReason, headers: [String: String]?) {
         guard let currentCall else { return }
         let endReason: CXCallEndedReason = reason == .answeredElsewhere ? .answeredElsewhere : .remoteEnded
+        switch reason {
+        case .answeredElsewhere:
+            showError(.answeredElsewhere)
+        case .connectionLost:
+            showError(.connectionLost)
+        default:
+            break
+        }
         reportCallEnded(currentCall.uuid, endReason)
     }
 
     func call(_ call: VICall, didFailWithError error: VICallConnectionError, headers: [String: String]?) {
         guard let currentCall else { return }
         reportCallEnded(currentCall.uuid, .failed)
+        showError(.startCallFailed(error.description))
     }
 
     func callDidStartReconnecting(_ call: VICall) {
@@ -316,24 +330,27 @@ extension CallViewModel: CXProviderDelegate {
     }
 
     func provider(_ provider: CXProvider, execute transaction: CXTransaction) -> Bool {
-        let isPendingTransaction: Bool
-        if clientIsLoggedIn, currentCall?.call != nil {
-            isPendingTransaction = false
-            print("execute transaction immediately")
-        } else {
-            isPendingTransaction = true
-
-            // We take the first action cause transaction does not contain more than one in current implementation
-            guard let endCallAction = transaction.actions.first as? CXEndCallAction else {
-                return isPendingTransaction
-            }
-            let callUUID = endCallAction.callUUID
-            print("should reject VICall with callUUID: \(callUUID) after receiving")
-            pendingEndCallActions.append(callUUID)
-            endCallAction.fulfill(withDateEnded: Date())
-            callClear()
+        if transaction.actions.first is CXStartCallAction {
+            print("execute start call transaction immediately")
+            return false
         }
-        return isPendingTransaction
+
+        if clientIsLoggedIn, currentCall?.call != nil {
+            print("execute transaction immediately")
+            return false
+        }
+
+        // We take the first action cause transaction does not contain more than one in current implementation
+        guard let endCallAction = transaction.actions.first as? CXEndCallAction else {
+            return true
+        }
+
+        let callUUID = endCallAction.callUUID
+        print("should reject VICall with callUUID: \(callUUID) after receiving")
+        pendingEndCallActions.append(callUUID)
+        endCallAction.fulfill(withDateEnded: Date())
+        callClear()
+        return true
     }
 
     func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
@@ -355,9 +372,9 @@ extension CallViewModel {
         callClear()
     }
 
-    private func requestTransaction(_ action: CXAction, completion: @escaping (Error?) -> Void) {
-        callController.requestTransaction(with: [action]) { error in
-            completion(error)
+    private func showError(_ callError: CallError) {
+        DispatchQueue.main.async {
+            self.callError = callError
         }
     }
 

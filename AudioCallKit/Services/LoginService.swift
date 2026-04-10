@@ -57,7 +57,9 @@ final class LoginService {
     }
 
     private func performLogin(completion: @escaping (Result<String, LoginError>) -> Void) {
-        let preparedUsername = username + usernameSuffix
+        username = username.trimmingCharacters(in: .whitespacesAndNewlines)
+        let preparedUsername = username.contains(usernameSuffix) ? username : username + usernameSuffix
+
         client.login(withPassword: self.password, user: preparedUsername) { [weak self] loginResult, error in
             guard let self else { return }
             DispatchQueue.main.async {

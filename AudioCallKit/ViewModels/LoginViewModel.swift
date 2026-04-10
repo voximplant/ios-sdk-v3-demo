@@ -11,9 +11,7 @@ final class LoginViewModel: ObservableObject {
     @Published var loginError: LoginError?
     @Published var displayName: String
 
-    var usernameSuffix: String {
-        loginService.usernameSuffix
-    }
+    var usernameSuffix: String { loginService.usernameSuffix }
     let availableNodes: [VINode]
 
     private let loginService: LoginService

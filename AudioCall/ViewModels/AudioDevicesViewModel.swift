@@ -7,6 +7,7 @@ import SwiftUI
 import VoximplantCore
 
 final class AudioDevicesViewModel: ObservableObject {
+    @Published var error: AudioDeviceError?
     @Published var selectedAudioDevice: AudioDevice? {
         didSet {
             if oldValue != selectedAudioDevice, let selectedAudioDevice {
@@ -21,16 +22,17 @@ final class AudioDevicesViewModel: ObservableObject {
     init() {
         audioDeviceService = VIAudioManager.shared
         audioDeviceService.delegate = self
-
-        if AVAudioSession.sharedInstance().category != .playAndRecord {
-            try? AVAudioSession.sharedInstance().setCategory(.soloAmbient, mode: .default, options: [])
-        }
         updateAudioDevices()
     }
 
     private func selectAudioDevice(_ audioDevice: AudioDevice) {
-        if let chosenDevice = audioDeviceService.deviceList.first(where: { $0.id == audioDevice.id }) {
-            audioDeviceService.setActiveDevice(chosenDevice) { _ in }
+        guard let chosenDevice = audioDeviceService.deviceList.first(where: { $0.id == audioDevice.id }) else {
+            self.error = .internalError
+            return
+        }
+        audioDeviceService.setActiveDevice(chosenDevice) { [weak self] error in
+            guard let error else { return }
+            self?.showErrorIfNeeded(error)
         }
     }
 
@@ -53,19 +55,37 @@ final class AudioDevicesViewModel: ObservableObject {
         guard let current = audioDeviceService.currentDevice else { return nil }
         return AudioDevice(name: current.name, id: current.id, type: current.type)
     }
+
+    private func showErrorIfNeeded(_ error: VIAudioDeviceError) {
+        DispatchQueue.main.async {
+            switch error.type {
+            case .deviceAlreadyActive, .noSuchDeviceInDeviceList:
+                break
+            case .unsupportedDevice:
+                self.error = .unsupportedDeviceDetected
+            case .internalError:
+                self.error = .internalError
+            default:
+                self.error = .internalError
+            }
+        }
+    }
 }
 
 extension AudioDevicesViewModel: VIAudioManagerDelegate {
-    func audioManager(_ audioManager: VIAudioManager, didReceiveError error: VIAudioDeviceError) {}
+    func audioManager(_ audioManager: VIAudioManager, didReceiveError error: VIAudioDeviceError) {
+        showErrorIfNeeded(error)
+    }
+
     func audioManager(_ audioManager: VIAudioManager, didAddDevice device: VIAudioDevice) {
-        DispatchQueue.main.async { [weak self] in
-            self?.updateAudioDevices()
+        DispatchQueue.main.async {
+            self.updateAudioDevices()
         }
     }
 
     func audioManager(_ audioManager: VIAudioManager, didRemoveDevice device: VIAudioDevice) {
-        DispatchQueue.main.async { [weak self] in
-            self?.updateAudioDevices()
+        DispatchQueue.main.async {
+            self.updateAudioDevices()
         }
     }
 }

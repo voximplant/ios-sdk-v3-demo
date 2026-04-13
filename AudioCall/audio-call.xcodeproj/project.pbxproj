@@ -23,6 +23,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				AudioDevice.swift,
+				AudioDeviceError.swift,
 				CallState.swift,
 				LoginError.swift,
 			);
@@ -51,6 +52,13 @@
 				AudioCallApp.swift,
 				LoginView.swift,
 				StartCallView.swift,
+			);
+			target = B1C1C36B2E902C7B00147E3E /* audio-call */;
+		};
+		B1DC1F232F8D4239005BD1E7 /* Exceptions for "Services" folder in "audio-call" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				LoginService.swift,
 			);
 			target = B1C1C36B2E902C7B00147E3E /* audio-call */;
 		};
@@ -89,6 +97,14 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		B1DC1F202F8D41FD005BD1E7 /* Services */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				B1DC1F232F8D4239005BD1E7 /* Exceptions for "Services" folder in "audio-call" target */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,6 +127,7 @@
 				B14B94B62F76684F005722E8 /* .swiftlint.yml */,
 				B14B94BE2F766867005722E8 /* Models */,
 				B14B94C22F766867005722E8 /* Resources */,
+				B1DC1F202F8D41FD005BD1E7 /* Services */,
 				B14B94CE2F766867005722E8 /* ViewModels */,
 				B14B94D32F766867005722E8 /* Views */,
 				B1C1C36D2E902C7B00147E3E /* Products */,

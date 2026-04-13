@@ -7,12 +7,11 @@ import SwiftUI
 import VoximplantCore
 
 struct LoginView: View {
-    @State private var showToast = false
-    @State private var toastMessage = ""
     @State private var isNodePickerPresented = false
     @State private var sheetHeight: CGFloat = .zero
-    @State private var selectedNode: VINode = .node4
-
+    @AppStorage("username") private var username = ""
+    @AppStorage("password") private var password = ""
+    @AppStorage("selectedNode") private var selectedNode: VINode = .node4
     @EnvironmentObject private var loginViewModel: LoginViewModel
 
     private enum Constants {
@@ -28,12 +27,13 @@ struct LoginView: View {
                 Text("Audio call demo")
                     .font(FontSet.largeTitle)
                     .foregroundStyle(Color.black)
-                RoundedTextField(text: $loginViewModel.username, placeholder: "user@app.account", suffix: loginViewModel.usernameSuffix)
-                RoundedTextField(text: $loginViewModel.password, placeholder: "Password", isSecured: true)
-                SelectedNodeView(isPresentedNodePicker: $isNodePickerPresented, selectedNode: $loginViewModel.selectedNode)
+                RoundedTextField(text: $username, placeholder: "user@app.account", suffix: loginViewModel.usernameSuffix)
+                RoundedTextField(text: $password, placeholder: "Password", isSecured: true)
+                SelectedNodeView(isPresentedNodePicker: $isNodePickerPresented, selectedNode: $selectedNode)
                 FullWidthButton(title: "Login") {
                     loginViewModel.login()
                 }
+                .disabled(username.isEmpty || password.isEmpty)
             }
             .padding()
 
@@ -48,29 +48,13 @@ struct LoginView: View {
                     .padding()
             }
             .ignoresSafeArea(.keyboard, edges: .bottom)
-
-            VStack {
-                if showToast {
-                    ErrorToastView(message: toastMessage)
-                        .transition(.move(edge: .top).combined(with: .opacity))
-                        .padding()
-                }
-                Spacer()
-            }
         }
-        .animation(.spring(response: 0.5, dampingFraction: 0.7), value: showToast)
-        .onChange(of: loginViewModel.loginError) { newError in
-            guard let error = newError else { return }
-            toastMessage = String(describing: error)
-            withAnimation {
-                showToast = true
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                loginViewModel.loginError = nil
-                withAnimation {
-                    showToast = false
-                }
-            }
+        .toast(error: $loginViewModel.loginError)
+        .onChange(of: username) { _ in
+            username = username.filter { !$0.isWhitespace }
+        }
+        .onChange(of: password) { _ in
+            password = password.filter { !$0.isWhitespace }
         }
         .sheet(isPresented: $isNodePickerPresented) {
             VStack {
@@ -88,7 +72,6 @@ struct LoginView: View {
                     Spacer()
 
                     Button {
-                        loginViewModel.selectedNode = selectedNode
                         isNodePickerPresented = false
                     } label: {
                         Text("Select")
@@ -96,9 +79,6 @@ struct LoginView: View {
                     }
                 }
                 .padding(Constants.nodePickerPadding)
-                .onDisappear {
-                    selectedNode = loginViewModel.selectedNode
-                }
 
                 Picker("", selection: $selectedNode) {
                     ForEach(loginViewModel.availableNodes, id: \.self) { node in

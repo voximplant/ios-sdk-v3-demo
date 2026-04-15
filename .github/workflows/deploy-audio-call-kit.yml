@@ -14,4 +14,10 @@ jobs:
       xcodeproj: audio-call-kit.xcodeproj
       scheme: audio-call-kit
       bundle_id: com.voximplant.demos.v3.audiocallkit
-    secrets: inherit
+    secrets:
+      CERTIFICATES_P12: ${{ secrets.CERTIFICATES_P12 }}
+      CERTIFICATES_PASSWORD: ${{ secrets.CERTIFICATES_PASSWORD }}
+      PROVISIONING_PROFILE: ${{ secrets.PROVISIONING_PROFILE_AUDIOCALLKIT }}
+      APPSTORE_PRIVATE_KEY: ${{ secrets.APPSTORE_PRIVATE_KEY }}
+      APPSTORE_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
+      APPSTORE_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}

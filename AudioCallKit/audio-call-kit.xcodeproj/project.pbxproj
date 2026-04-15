@@ -184,6 +184,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				B14B959B2F76CCFB005722E8 /* PBXTargetDependency */,
 			);
 			name = "audio-call-kit";
 			packageProductDependencies = (
@@ -222,6 +223,7 @@
 			packageReferences = (
 				B268E5372E95405300C97B6E /* XCRemoteSwiftPackageReference "ios-sdk-releases" */,
 				B14B95962F76BAF7005722E8 /* XCLocalSwiftPackageReference "../Shared" */,
+				B14B95992F76CCD6005722E8 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B1C1C36D2E902C7B00147E3E /* Products */;
@@ -253,6 +255,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B14B959B2F76CCFB005722E8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = B14B959A2F76CCFB005722E8 /* SwiftLintBuildToolPlugin */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		B1C1C3752E902C8000147E3E /* Debug */ = {
@@ -487,6 +496,14 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		B14B95992F76CCD6005722E8 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SimplyDanny/SwiftLintPlugins";
+			requirement = {
+				kind = exactVersion;
+				version = 0.63.2;
+			};
+		};
 		B268E5372E95405300C97B6E /* XCRemoteSwiftPackageReference "ios-sdk-releases" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/voximplant/ios-sdk-releases";
@@ -501,6 +518,11 @@
 		B14B95972F76BAF7005722E8 /* CommonUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = CommonUI;
+		};
+		B14B959A2F76CCFB005722E8 /* SwiftLintBuildToolPlugin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B14B95992F76CCD6005722E8 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */;
+			productName = "plugin:SwiftLintBuildToolPlugin";
 		};
 		B268E5382E95405300C97B6E /* VoximplantCalls */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -2,7 +2,7 @@ name: Deploy Audio Call Kit
 
 on:
   workflow_dispatch:
-      push:
+  push:
     branches:
       - github_actions_adopt
 

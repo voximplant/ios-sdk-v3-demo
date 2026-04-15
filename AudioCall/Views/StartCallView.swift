@@ -6,7 +6,7 @@ import CommonUI
 import SwiftUI
 
 struct StartCallView: View {
-    @EnvironmentObject private var callViewModel: CallViewModel
+    @StateObject private var callViewModel = CallViewModel()
     @EnvironmentObject private var loginViewModel: LoginViewModel
     @FocusState private var destinationFieldIsFocused: Bool
 

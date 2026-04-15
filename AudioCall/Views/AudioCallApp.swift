@@ -6,15 +6,7 @@ import SwiftUI
 
 @main
 struct AudioCallApp: App {
-    @StateObject private var callViewModel: CallViewModel
-    @StateObject private var loginViewModel: LoginViewModel
-    @StateObject private var audioDevicesViewModel: AudioDevicesViewModel
-
-    init() {
-        _callViewModel = StateObject(wrappedValue: CallViewModel())
-        _loginViewModel = StateObject(wrappedValue: LoginViewModel())
-        _audioDevicesViewModel = StateObject(wrappedValue: AudioDevicesViewModel())
-    }
+    @StateObject private var loginViewModel = LoginViewModel()
 
     var body: some Scene {
         WindowGroup {
@@ -22,9 +14,7 @@ struct AudioCallApp: App {
                 .environmentObject(loginViewModel)
                 .fullScreenCover(isPresented: $loginViewModel.isLoggedIn) {
                     StartCallView()
-                        .environmentObject(callViewModel)
                         .environmentObject(loginViewModel)
-                        .environmentObject(audioDevicesViewModel)
                 }
         }
     }

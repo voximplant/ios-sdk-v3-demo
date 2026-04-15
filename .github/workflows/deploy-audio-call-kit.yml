@@ -1,0 +1,14 @@
+name: Deploy Audio Call Kit
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/deploy-testflight.yml
+    with:
+      project_dir: AudioCallKit
+      xcodeproj: audio-call-kit.xcodeproj
+      scheme: audio-call-kit
+      bundle_id: com.voximplant.demos.v3.audiocallkit
+    secrets: inherit

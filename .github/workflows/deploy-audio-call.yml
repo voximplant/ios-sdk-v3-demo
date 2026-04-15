@@ -2,6 +2,9 @@ name: Deploy Audio Call
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - github_actions_adopt
 
 jobs:
   deploy:

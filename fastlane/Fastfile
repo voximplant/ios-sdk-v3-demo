@@ -28,6 +28,7 @@ platform :ios do
               "-authenticationKeyIssuerID #{ENV['APPSTORE_ISSUER_ID']} " \
               "CODE_SIGN_STYLE=Manual " \
               "CODE_SIGN_IDENTITY='Apple Distribution: Zingaya, Inc. (W9BHJBL635)' " \
+              "PROVISIONING_PROFILE=#{ENV['PROFILE_UUID']} " \
               "SWIFT_PACKAGE_PLUGINS=NO"
     )
     

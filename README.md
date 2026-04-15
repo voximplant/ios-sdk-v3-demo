@@ -1,35 +1,41 @@
-# Voximplant iOS SDK 3.x Demo
+# Voximplant iOS SDK 3.x Demos
 
-This repository contains a sample iOS application that demonstrates basic audio call functionality of the Voximplant iOS SDK 3.x.
-The application is developed using SwiftUI.
+This repository contains sample iOS applications that demonstrate basic functionality of the [Voximplant iOS SDK 3.x](https://github.com/voximplant/ios-sdk-releases).
+The applications are developed using SwiftUI.
+
+## Applications
+
+| Application | Description |
+|---|---|
+| [AudioCall](AudioCall) | Audio call demo |
+| [AudioCallKit](AudioCallKit) | Audio call demo with [CallKit](https://developer.apple.com/documentation/callkit) integration |
 
 ## Requirements
 
 - Xcode 16 (or newer)
-- iOS 15 (or newer)
+- iOS 16 (or newer)
 
-## Installing
-1. Clone the repository with this command:
+## Getting Started
+
+1. Clone the repository:
     ```
     git clone https://github.com/voximplant/ios-sdk-v3-demo.git
     ```
-2. Open the project in Xcode.
+2. Open the desired project in Xcode (e.g. `AudioCall/audio-call.xcodeproj`).
 3. Run the app on a real device or a simulator.
 
+## Voximplant Account Setup
 
-## How to use
+Make sure you have a Voximplant account. [Register here](https://voximplant.com/).
 
-Make sure you have a Voximplant account to make calls. [Register](https://voximplant.com/).
-
-Your Voximplant account should be configured with the following setup:
-
+Your account should be configured with:
 - Voximplant application
-- at least two Voximplant users
+- At least two Voximplant users
 - VoxEngine scenario
-- routing setup
+- Routing setup
 
-## Have a question?
+## Have a Question?
 
-- Contact us via [support@voximplant.com](mailto:support@voximplant.com).
-- Create a new [issue](https://github.com/voximplant/ios-sdk-v3-demo/issues).
-- join our developer [Discord](https://discord.gg/sfCbT5u) community.
+- Contact us via [support@voximplant.com](mailto:support@voximplant.com)
+- Create a new [issue](https://github.com/voximplant/ios-sdk-v3-demo/issues)
+- Join our developer [Discord](https://discord.gg/sfCbT5u) community

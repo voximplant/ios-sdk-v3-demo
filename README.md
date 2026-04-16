@@ -8,7 +8,7 @@ The applications are developed using SwiftUI.
 | Application | Description |
 |---|---|
 | [AudioCall](AudioCall) | Audio call demo |
-| [AudioCallKit](AudioCallKit) | Audio call demo with [CallKit](https://developer.apple.com/documentation/callkit) integration |
+| [AudioCallKit](AudioCallKit) | Audio call demo with [CallKit](https://developer.apple.com/documentation/callkit) and [PushKit](https://developer.apple.com/documentation/pushkit) integration |
 
 ## Requirements
 

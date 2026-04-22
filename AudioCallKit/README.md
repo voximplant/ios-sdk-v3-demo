@@ -12,7 +12,7 @@ A sample audio call demo application with [CallKit](https://developer.apple.com/
 ## Getting Started
 
 1. Open `audio-call-kit.xcodeproj` in Xcode.
-2. Build and run on a real device (CallKit requires a real device).
+2. Build and run on a real device (required for CallKit).
 
 ## Account Setup
 

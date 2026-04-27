@@ -1,24 +1,42 @@
 default_platform(:ios)
 
 platform :ios do
-  desc "Push a new beta build to TestFlight"
+  desc "Push a new build to TestFlight"
   lane :deploy do
-    increment_build_number(
-      xcodeproj: "ios-sdk-v3-demo.xcodeproj"
+    project_dir = ENV['PROJECT_DIR']
+    xcodeproj = "#{project_dir}/#{ENV['XCODEPROJ']}"
+    scheme = ENV['SCHEME']
+    bundle_id = ENV['BUNDLE_ID']
+
+    increment_build_number(xcodeproj: xcodeproj)
+
+    update_code_signing_settings(
+      path: xcodeproj,
+      use_automatic_signing: false,
+      team_id: "W9BHJBL635",
+      bundle_identifier: bundle_id,
+      code_sign_identity: "Apple Distribution",
+      profile_uuid: ENV['PROFILE_UUID'],
+      targets: [scheme]
     )
-    
+
     build_app(
-      project: "ios-sdk-v3-demo.xcodeproj",
-      scheme: "ios-sdk-v3-demo",
+      project: xcodeproj,
+      scheme: scheme,
       export_method: "app-store",
       export_options: {
         method: "app-store",
         signingStyle: "manual",
         provisioningProfiles: {
-          "com.voximplant.demos.v3.audiocall" => ENV['PROFILE_UUID']
+          bundle_id => ENV['PROFILE_UUID']
         }
       },
-      xcargs: "-skipPackagePluginValidation -skipMacroValidation -authenticationKeyPath #{File.expand_path('../AuthKey_' + ENV['APPSTORE_KEY_ID'] + '.p8')} -authenticationKeyID #{ENV['APPSTORE_KEY_ID']} -authenticationKeyIssuerID #{ENV['APPSTORE_ISSUER_ID']} CODE_SIGN_STYLE=Manual PROVISIONING_PROFILE_SPECIFIER=#{ENV['PROFILE_UUID']} CODE_SIGN_IDENTITY='Apple Distribution: Zingaya, Inc. (W9BHJBL635)' SWIFT_PACKAGE_PLUGINS=NO"
+      xcargs: "-skipPackagePluginValidation " \
+              "-skipMacroValidation " \
+              "-authenticationKeyPath #{File.expand_path('../AuthKey_' + ENV['APPSTORE_KEY_ID'] + '.p8')} " \
+              "-authenticationKeyID #{ENV['APPSTORE_KEY_ID']} " \
+              "-authenticationKeyIssuerID #{ENV['APPSTORE_ISSUER_ID']} " \
+              "SWIFT_PACKAGE_PLUGINS=NO"
     )
     
     upload_to_testflight(

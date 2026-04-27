@@ -12,7 +12,7 @@ The applications are developed using SwiftUI.
 
 ## Requirements
 
-- Xcode 16 (or newer)
+- Xcode 26 (or newer)
 - iOS 16 (or newer)
 
 ## Getting Started

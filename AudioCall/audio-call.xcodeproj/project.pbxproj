@@ -24,6 +24,7 @@
 			membershipExceptions = (
 				AudioDevice.swift,
 				AudioDeviceError.swift,
+				CallError.swift,
 				CallState.swift,
 				LoginError.swift,
 			);

@@ -6,6 +6,7 @@ A sample audio call demo application built with SwiftUI using the [Voximplant iO
 
 - Login with Voximplant credentials
 - Make and receive audio calls
+- Switch audio devices during a call
 
 ## Getting Started
 

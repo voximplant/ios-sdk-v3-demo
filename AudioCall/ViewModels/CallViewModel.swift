@@ -9,6 +9,7 @@ final class CallViewModel: ObservableObject {
     @AppStorage("destination") var destination = ""
     @Published var isInCall = false
     @Published var isReconnecting = false
+    @Published var callError: CallError?
     @Published private(set) var callState: CallState = .noCall
     @Published private(set) var isMuted = false
     @Published private(set) var callDuration: TimeInterval = 0
@@ -107,6 +108,15 @@ extension CallViewModel: VICallDelegate {
             self.callState = .noCall
             self.isMuted = false
             self.isReconnecting = false
+
+            switch reason {
+            case .answeredElsewhere:
+                self.callError = .answeredElsewhere
+            case .connectionLost:
+                self.callError = .connectionLost
+            default:
+                break
+            }
         }
     }
 
@@ -117,6 +127,7 @@ extension CallViewModel: VICallDelegate {
             self.callState = .noCall
             self.isMuted = false
             self.isReconnecting = false
+            self.callError = .startCallFailed(error.description)
         }
     }
 

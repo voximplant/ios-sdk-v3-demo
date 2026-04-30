@@ -36,7 +36,7 @@ You can get access to the app via a TestFlight invite link.
 > Please consider that you need to set up a Voximplant account to make calls.
 
 > [!WARNING]
-> Push notifications require additional setup. If the application is built from the source code, set up push notifications. If the application was installed from the invite link, push notifications cannot be configured.
+> Push notifications require additional setup. If the application is built from the source code, [set up push notifications](https://voximplant.com/docs/guides/sdk/ios-push). If the application was installed from the invite link, push notifications cannot be configured.
 
 ## Account Setup
 

@@ -50,6 +50,7 @@ struct StartCallView: View {
                     destinationFieldIsFocused = false
                     callViewModel.makeCall()
                 }
+                .disabled(callViewModel.destination.isEmpty)
 
                 Spacer()
             }
@@ -60,6 +61,7 @@ struct StartCallView: View {
                 BackgroundClearView()
                 ActiveCallView()
             }
+            .environmentObject(callViewModel)
         }
         .toast(error: $callViewModel.callError)
         .onChange(of: callViewModel.destination) { _ in

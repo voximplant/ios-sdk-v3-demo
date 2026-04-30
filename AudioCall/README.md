@@ -2,6 +2,16 @@
 
 A sample audio call demo application built with SwiftUI using the [Voximplant iOS SDK 3.x](https://github.com/voximplant/ios-sdk-releases).
 
+## Usage
+
+### Login
+
+<img src="../screenshots/login.png" width=220> <img src="../screenshots/start_call.png" width=220>
+
+### Active call
+
+<img src="../screenshots/inc_call.png" width=220> <img src="../screenshots/active_call.png" width=220> <img src="../screenshots/switch_audio.png" width=220>
+
 ## Features
 
 - Login with Voximplant credentials

@@ -12,6 +12,10 @@ A sample audio call demo application built with SwiftUI using the [Voximplant iO
 1. Open `audio-call.xcodeproj` in Xcode.
 2. Build and run on a real device or simulator.
 
+## Invite Link
+
+You can get access to the app via a TestFlight [invite link](https://testflight.apple.com/join/uvUKr1j4).
+
 ## Account Setup
 
 Refer to the [main README](../README.md#voximplant-account-setup) for account configuration details.

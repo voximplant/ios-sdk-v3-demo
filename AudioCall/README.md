@@ -6,11 +6,15 @@ A sample audio call demo application built with SwiftUI using the [Voximplant iO
 
 ### Login
 
-<img src="../screenshots/login.png" width=220> <img src="../screenshots/start_call.png" width=220>
+<img src="../screenshots/login.png" width=220>
 
-### Active call
+### Make or Receive Call
 
-<img src="../screenshots/inc_call.png" width=220> <img src="../screenshots/active_call.png" width=220> <img src="../screenshots/switch_audio.png" width=220>
+<img src="../screenshots/start_call.png" width=220> <img src="../screenshots/inc_call.png" width=220>
+
+### Active Call
+
+<img src="../screenshots/active_call.png" width=220> <img src="../screenshots/switch_audio.png" width=220>
 
 ## Features
 

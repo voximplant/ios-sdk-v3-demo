@@ -398,6 +398,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Audio Call Kit";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Access to the camera is necessary for video calls and enhanced communication features";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Access to the microphone is necessary in order to make and receive audio calls";
@@ -438,6 +439,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Audio Call Kit";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Access to the camera is necessary for video calls and enhanced communication features";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Access to the microphone is necessary in order to make and receive audio calls";

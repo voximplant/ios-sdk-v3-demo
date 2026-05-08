@@ -3,7 +3,6 @@
 //
 
 import Combine
-import SwiftUI
 import VoximplantCore
 
 final class LoginService {
@@ -13,11 +12,19 @@ final class LoginService {
     private(set) var displayName = ""
     let usernameSuffix = ".voximplant.com"
 
-    @AppStorage("username") private var username = ""
-    @AppStorage("password") private var password = ""
-    @AppStorage("selectedNode") private var selectedNode: VINode = .node4
+    private var username: String {
+        userDefaults.string(forKey: "username") ?? ""
+    }
+    private var password: String {
+        userDefaults.string(forKey: "password") ?? ""
+    }
+    private var selectedNode: VINode {
+        let rawValue = userDefaults.integer(forKey: "selectedNode")
+        return VINode(rawValue: rawValue) ?? .node4
+    }
 
     private let client = VIClient.shared
+    private let userDefaults = UserDefaults.standard
     private let defaultDisplayName = "Unknown"
 
     private init() {
@@ -57,8 +64,8 @@ final class LoginService {
     }
 
     private func performLogin(completion: @escaping (Result<String, LoginError>) -> Void) {
-        username = username.trimmingCharacters(in: .whitespacesAndNewlines)
-        let preparedUsername = username.contains(usernameSuffix) ? username : username + usernameSuffix
+        var preparedUsername = username.trimmingCharacters(in: .whitespacesAndNewlines)
+        preparedUsername = preparedUsername.contains(usernameSuffix) ? preparedUsername : preparedUsername + usernameSuffix
 
         client.login(withPassword: self.password, user: preparedUsername) { [weak self] loginResult, error in
             guard let self else { return }

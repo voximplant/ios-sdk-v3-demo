@@ -30,7 +30,7 @@ A sample audio call demo application with [CallKit](https://developer.apple.com/
 
 ## Invite Link
 
-You can get access to the app via a TestFlight invite link.
+You can get access to the app via a TestFlight [invite link](https://testflight.apple.com/join/nJSzbTJt).
 
 > [!WARNING]
 > Please consider that you need to set up a Voximplant account to make calls.

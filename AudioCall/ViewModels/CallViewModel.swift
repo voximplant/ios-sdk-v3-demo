@@ -94,7 +94,7 @@ extension CallViewModel: VICallManagerDelegate {
 }
 
 extension CallViewModel: VICallDelegate {
-    func call(_ call: VICall, didConnectWithHeaders headers: [String: String]?) {
+    func call(_ call: VICall, didConnectWithVideo video: Bool, headers: [String: String]?) {
         DispatchQueue.main.async {
             self.callState = .callConnected(call.userDisplayName ?? "Unknown user")
             self.startDurationTimer()

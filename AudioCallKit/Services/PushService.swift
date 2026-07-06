@@ -22,7 +22,7 @@ final class PushService {
     }
 
     func register(voIPPushToken token: Data, completion: ((Result<Void, Error>) -> Void)?) {
-        client.registerVoIPPushNotificationsToken(token, group: bundleId) { error in
+        client.registerVoIPPushNotificationsToken(token, bundleId: bundleId) { error in
             if let error {
                 completion?(.failure(error))
             } else {
@@ -32,7 +32,7 @@ final class PushService {
     }
 
     func unregister(voIPPushToken token: Data, completion: ((Result<Void, Error>) -> Void)?) {
-        client.unregisterVoIPPushNotificationsToken(token, group: bundleId) { error in
+        client.unregisterVoIPPushNotificationsToken(token, bundleId: bundleId) { error in
             if let error {
                 completion?(.failure(error))
             } else {

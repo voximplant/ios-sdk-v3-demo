@@ -149,7 +149,7 @@ extension CallViewModel: VICallManagerDelegate {
 
 // MARK: - VICallDelegate
 extension CallViewModel: VICallDelegate {
-    func call(_ call: VICall, didConnectWithHeaders headers: [String: String]?) {
+    func call(_ call: VICall, didConnectWithVideo video: Bool, headers: [String: String]?) {
         guard let currentCall else {
             call.delegate = nil
             call.hangup()

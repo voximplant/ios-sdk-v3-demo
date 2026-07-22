@@ -511,7 +511,7 @@
 			repositoryURL = "https://github.com/voximplant/ios-sdk-releases";
 			requirement = {
 				kind = upToNextMinorVersion;
-				minimumVersion = 3.2.0;
+				minimumVersion = 3.3.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

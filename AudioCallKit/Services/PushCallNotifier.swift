@@ -40,12 +40,17 @@ extension PushCallNotifier: PKPushRegistryDelegate {
         for type: PKPushType,
         completion pushCompletion: @escaping () -> Void
     ) {
-        guard let callUuid = pushService.handlePushNotification(pushPayload: payload.dictionaryPayload),
-              let push = VoximplantPush(from: payload.dictionaryPayload, callUuid: callUuid) else {
-            return
-        }
+        handleIncomingPush(payload: payload, pushCompletion: pushCompletion)
+    }
 
-        delegate?.pushCallNotifier(self, didReceiveIncomingPush: push, with: pushCompletion)
+    @available(iOS 26.4, *)
+    func pushRegistry(
+        _ registry: PKPushRegistry,
+        didReceiveIncomingVoIPPushWith payload: PKPushPayload,
+        metadata: PKVoIPPushMetadata,
+        withCompletionHandler pushCompletion: @escaping () -> Void
+    ) {
+        handleIncomingPush(payload: payload, pushCompletion: pushCompletion)
     }
 
     func pushRegistry(_ registry: PKPushRegistry, didUpdate pushCredentials: PKPushCredentials, for type: PKPushType) {
@@ -58,5 +63,14 @@ extension PushCallNotifier: PKPushRegistryDelegate {
             PushService.shared.unregister(voIPPushToken: pushToken, completion: nil)
         }
         pushToken = nil
+    }
+
+    private func handleIncomingPush(payload: PKPushPayload, pushCompletion: @escaping () -> Void) {
+        guard let callUuid = pushService.handlePushNotification(pushPayload: payload.dictionaryPayload),
+              let push = VoximplantPush(from: payload.dictionaryPayload, callUuid: callUuid) else {
+            return
+        }
+
+        delegate?.pushCallNotifier(self, didReceiveIncomingPush: push, with: pushCompletion)
     }
 }

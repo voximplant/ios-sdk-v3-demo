@@ -57,7 +57,7 @@ final class CallViewModel: ObservableObject {
 
     func toggleMute() {
         if let currentCall {
-            currentCall.muteAudio(!isMuted)
+            currentCall.muteAudio(!isMuted) { _ in }
             isMuted.toggle()
         }
     }

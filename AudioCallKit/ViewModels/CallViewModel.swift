@@ -308,7 +308,7 @@ extension CallViewModel: CXProviderDelegate {
             action.fail()
             return
         }
-        call.muteAudio(action.isMuted)
+        call.muteAudio(action.isMuted) { _ in }
         DispatchQueue.main.async {
             self.data.isMuted = action.isMuted
         }

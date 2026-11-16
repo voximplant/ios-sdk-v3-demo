@@ -1,4 +1,4 @@
-name: Deploy to TestFlight
+name: Deploy Common (do not run)
 
 on:
   workflow_call:
